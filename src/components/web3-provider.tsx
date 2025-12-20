@@ -5,7 +5,8 @@ import { createWeb3Modal } from '@web3modal/ethers5/react';
 import { WagmiConfig, createConfig, configureChains } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
 import { baseSepolia } from 'wagmi/chains';
-import { walletConnect, injected } from 'wagmi/connectors';
+import { walletConnect } from 'wagmi/connectors/walletConnect';
+import { InjectedConnector } from 'wagmi/connectors/injected';
 import * as React from 'react';
 
 // 1. Get ProjectID
@@ -31,7 +32,7 @@ const wagmiConfig = createConfig({
   autoConnect: true,
   connectors: [
     walletConnect({ projectId, metadata, chains, options: {} }),
-    injected({ chains, options: { shimDisconnect: true } }),
+    new InjectedConnector({ chains, options: { shimDisconnect: true } }),
   ],
   publicClient,
   webSocketPublicClient,
