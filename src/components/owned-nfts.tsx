@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useAccount } from 'wagmi';
@@ -51,22 +52,23 @@ export function OwnedNfts({ onNftSelect, selectedNft }: OwnedNftsProps) {
       setNfts([]);
 
       try {
+        // Using a Goerli endpoint, as mainnet can be slow for demos
         const response = await fetch(
-          `https://eth-goerli.g.alchemy.com/nft/v2/${ALCHEMY_API_KEY}/getNFTs?owner=${address}`
+          `https://eth-goerli.g.alchemy.com/nft/v2/${ALCHEMY_API_KEY}/getNFTs?owner=${address}&pageSize=100`
         );
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.message || 'Failed to fetch NFTs');
+          throw new Error(errorData.message || 'Failed to fetch NFTs from Alchemy');
         }
         const data = await response.json();
-        // Filter out NFTs without images
+        // Filter out NFTs without valid images or videos
         const filteredNfts = data.ownedNfts.filter((nft: OwnedNft) => 
           nft.media && nft.media[0] && nft.media[0].gateway && !nft.media[0].gateway.includes('video')
         );
         setNfts(filteredNfts);
       } catch (e: any) {
         console.error(e);
-        setError(e.message || 'An unexpected error occurred.');
+        setError(e.message || 'An unexpected error occurred while fetching your NFTs.');
       } finally {
         setLoading(false);
       }
@@ -76,6 +78,7 @@ export function OwnedNfts({ onNftSelect, selectedNft }: OwnedNftsProps) {
       fetchNfts();
     } else {
       setNfts([]);
+      setLoading(false);
     }
   }, [address, isConnected]);
 
@@ -120,21 +123,21 @@ export function OwnedNfts({ onNftSelect, selectedNft }: OwnedNftsProps) {
           <Info className="h-4 w-4" />
           <AlertTitle>No NFTs Found</AlertTitle>
           <AlertDescription>
-            We couldn't find any NFTs in your wallet on the Goerli network.
+            We couldn't find any NFTs in your wallet on the Goerli test network.
           </AlertDescription>
         </Alert>
       );
     }
 
     return (
-      <ScrollArea className="h-[400px] w-full">
+      <ScrollArea className="h-[250px] w-full">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-3 gap-4 pr-4">
           {nfts.map((nft) => (
             <button
               key={`${nft.contract.address}-${nft.tokenId}`}
               className={cn(
                 'relative aspect-square w-full rounded-md overflow-hidden bg-muted transition-all duration-200',
-                'outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background',
+                'outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
                 selectedNft?.tokenId === nft.tokenId && selectedNft?.contract.address === nft.contract.address && 'ring-2 ring-accent ring-offset-2 ring-offset-background'
               )}
               onClick={() => onNftSelect(nft)}
@@ -144,7 +147,7 @@ export function OwnedNfts({ onNftSelect, selectedNft }: OwnedNftsProps) {
                 alt={nft.title || 'NFT Image'}
                 fill
                 sizes="(max-width: 768px) 33vw, 128px"
-                className="object-cover"
+                className="object-cover transition-transform hover:scale-105"
                 data-ai-hint="nft owned"
               />
             </button>

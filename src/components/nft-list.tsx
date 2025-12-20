@@ -96,17 +96,22 @@ export function NFTList() {
   const { user } = useUser();
   const query = useMemo(() => {
     if (!user) return undefined;
+    // This creates a query constraint to fetch documents where 'userId' is equal to the current user's UID.
+    // This is crucial for security rules and for fetching only the relevant data.
     return ['userId', '==', user.uid] as const;
   }, [user]);
   
   const { data: nfts, loading } = useCollection<FractionalizedNft>(
     "fractionalizedNfts",
     {
+      // The query constraint is passed here.
+      // The `deps` array ensures the hook re-runs when the user object changes (e.g., on login/logout).
       query: query,
-      deps: [user],
+      deps: [user], 
     }
   );
 
+  // If the user is not logged in, we don't need to show this component.
   if (!user) {
     return null;
   }
@@ -114,7 +119,7 @@ export function NFTList() {
   const renderContent = () => {
     if (loading) {
       return (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-3 gap-4 pr-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-6">
           {[...Array(3)].map((_, i) => (
              <div key={i} className="flex flex-col gap-2">
                 <Skeleton className="aspect-square w-full rounded-md" />
@@ -139,7 +144,7 @@ export function NFTList() {
     }
 
     return (
-       <ScrollArea className="h-[400px] w-full">
+       <ScrollArea className="h-[250px] w-full">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-6 pr-4">
           {nfts.map((nft) => (
             <NFTListItem key={nft.id} nft={nft} />
