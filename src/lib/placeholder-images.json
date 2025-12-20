@@ -1,3 +1,64 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "1",
+      "description": "A vibrant abstract painting with a mix of blue and pink.",
+      "imageUrl": "https://images.unsplash.com/photo-1622542796254-5b9c46ab0d2f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8YWJzdHJhY3QlMjBwYWludGluZ3xlbnwwfHx8fDE3NjYxNDY1MTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abstract painting"
+    },
+    {
+      "id": "2",
+      "description": "A digital artwork of a futuristic city skyline at night.",
+      "imageUrl": "https://images.unsplash.com/photo-1553675559-5046b59a5ca5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxmdXR1cmlzdGljJTIwY2l0eXxlbnwwfHx8fDE3NjYxMzk4MjR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "futuristic city"
+    },
+    {
+      "id": "3",
+      "description": "A close-up shot of a blooming flower with dew drops.",
+      "imageUrl": "https://images.unsplash.com/photo-1745358156545-f26349445d55?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxmbG93ZXIlMjBkZXd8ZW58MHx8fHwxNzY2MTE4ODE4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "flower dew"
+    },
+    {
+      "id": "4",
+      "description": "A serene landscape of mountains reflecting in a clear lake.",
+      "imageUrl": "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtb3VudGFpbiUyMGxha2V8ZW58MHx8fHwxNzY2MDg0NzIyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "mountain lake"
+    },
+    {
+      "id": "5",
+      "description": "An illustration of a mythical creature in an enchanted forest.",
+      "imageUrl": "https://images.unsplash.com/photo-1764555719692-df3cf8541928?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxteXRoaWNhbCUyMGNyZWF0dXJlfGVufDB8fHx8MTc2NjIwMzU2Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "mythical creature"
+    },
+    {
+      "id": "6",
+      "description": "A minimalist black and white photograph of architectural lines.",
+      "imageUrl": "https://images.unsplash.com/photo-1534094830444-3a1e21f7e3e7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtaW5pbWFsaXN0JTIwYXJjaGl0ZWN0dXJlfGVufDB8fHx8MTc2NjExNDU1N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "minimalist architecture"
+    },
+    {
+      "id": "7",
+      "description": "A colorful graffiti art piece on a brick wall.",
+      "imageUrl": "https://images.unsplash.com/photo-1619454341303-dd0fafe014b8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxncmFmZml0aSUyMGFydHxlbnwwfHx8fDE3NjYyMDM1NjJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "graffiti art"
+    },
+    {
+      "id": "8",
+      "description": "A 3D render of a geometric shape with iridescent textures.",
+      "imageUrl": "https://images.unsplash.com/photo-1644214250706-56e8dbd457ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxnZW9tZXRyaWMlMjBpcmlkZXNjZW50fGVufDB8fHx8MTc2NjIwMzU2Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "geometric iridescent"
+    },
+    {
+      "id": "9",
+      "description": "A portrait of a person with cybernetic enhancements.",
+      "imageUrl": "https://images.unsplash.com/photo-1633957897986-70e83293f3ff?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjeWJlcm5ldGljJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzY2MjAzNTYyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "cybernetic portrait"
+    },
+    {
+      "id": "10",
+      "description": "A pixel art representation of a classic video game scene.",
+      "imageUrl": "https://images.unsplash.com/photo-1562229125-6d6075419a22?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwaXhlbCUyMGFydHxlbnwwfHx8fDE3NjYxODc4MzF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "pixel art"
+    }
+  ]
 }

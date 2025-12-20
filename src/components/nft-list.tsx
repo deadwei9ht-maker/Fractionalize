@@ -11,8 +11,9 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Terminal, Image as ImageIcon } from "lucide-react";
+import { Terminal } from "lucide-react";
 import Image from "next/image";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 type FractionalizedNft = {
   id: string;
@@ -42,8 +43,8 @@ export function NFTList() {
           <Skeleton className="h-8 w-48" />
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-20 w-full" />
         </CardContent>
       </Card>
     );
@@ -69,7 +70,7 @@ export function NFTList() {
   }
 
   return (
-    <Card className="w-full max-w-md mt-8">
+    <Card className="w-full max-w-md mt-8 border-accent/20 bg-card/50">
       <CardHeader>
         <CardTitle>Your Fractionalized NFTs</CardTitle>
         <CardDescription>
@@ -77,27 +78,30 @@ export function NFTList() {
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        {nfts.map((nft, index) => (
-          <div
-            key={nft.id}
-            className="flex items-center justify-between rounded-lg border border-border/50 bg-input p-3 gap-4"
-          >
-            <div className="relative h-16 w-16 rounded-md overflow-hidden bg-muted flex-shrink-0">
-              <Image 
-                src={`https://picsum.photos/seed/${nft.id}/64/64`}
-                alt={`NFT ${nft.tokenId}`}
-                width={64}
-                height={64}
-                className="object-cover"
-                data-ai-hint="nft abstract"
-              />
+        {nfts.map((nft, index) => {
+          const placeholder = PlaceHolderImages[index % PlaceHolderImages.length];
+          return (
+            <div
+              key={nft.id}
+              className="flex items-center justify-between rounded-lg border border-border/50 bg-input p-3 gap-4"
+            >
+              <div className="relative h-16 w-16 rounded-md overflow-hidden bg-muted flex-shrink-0">
+                <Image 
+                  src={placeholder.imageUrl}
+                  alt={placeholder.description}
+                  width={64}
+                  height={64}
+                  className="object-cover"
+                  data-ai-hint={placeholder.imageHint}
+                />
+              </div>
+              <div className="flex-grow overflow-hidden">
+                <p className="font-mono text-sm truncate text-white" title={nft.nftContract}>{nft.nftContract}</p>
+                <p className="text-xs text-muted-foreground">Token ID: {nft.tokenId}</p>
+              </div>
             </div>
-            <div className="flex-grow overflow-hidden">
-              <p className="font-mono text-sm truncate text-white" title={nft.nftContract}>{nft.nftContract}</p>
-              <p className="text-xs text-muted-foreground">Token ID: {nft.tokenId}</p>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </CardContent>
     </Card>
   );
