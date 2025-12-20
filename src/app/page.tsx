@@ -7,13 +7,6 @@ import { UserAuth } from '@/components/user-auth';
 import { WalletConnectButton } from '@/components/wallet-connect-button';
 import { OwnedNfts, type OwnedNft } from '@/components/owned-nfts';
 import { Separator } from '@/components/ui/separator';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 
 export default function Home() {
   const [selectedNft, setSelectedNft] = useState<OwnedNft | null>(null);
