@@ -1,9 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { addDoc, collection } from "firebase/firestore";
 import { Copy } from "lucide-react";
-import { cn } from "@/lib/utils";
 
+import { cn } from "@/lib/utils";
+import { useFirestore } from "@/firebase";
+import { useUser } from "@/firebase/auth/use-user";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,9 +19,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "./ui/skeleton";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 export function NFTFractionalizer() {
   const { toast } = useToast();
+  const db = useFirestore();
+  const { user } = useUser();
+
   const [nftContract, setNftContract] = useState("");
   const [tokenId, setTokenId] = useState("");
   const [showResult, setShowResult] = useState(false);
@@ -35,6 +43,15 @@ export function NFTFractionalizer() {
   }, [showResult, tokenId]);
 
   const handleFractionalize = async () => {
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Authentication Required",
+        description: "Please log in to fractionalize an NFT.",
+      });
+      return;
+    }
+
     if (!nftContract.trim() || !tokenId.trim()) {
       toast({
         variant: "destructive",
@@ -44,11 +61,40 @@ export function NFTFractionalizer() {
       return;
     }
 
+    if (!db) return;
+
     setIsLoading(true);
-    // Simulate network delay for a more realistic feel
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsLoading(false);
-    setShowResult(true);
+    try {
+      await addDoc(collection(db, "fractionalizedNfts"), {
+        userId: user.uid,
+        nftContract,
+        tokenId,
+        createdAt: new Date(),
+      });
+      setShowResult(true);
+    } catch (error: any) {
+        if (error.code === 'permission-denied') {
+            const permissionError = new FirestorePermissionError({
+              path: 'fractionalizedNfts',
+              operation: 'create',
+              requestResourceData: {
+                userId: user.uid,
+                nftContract,
+                tokenId,
+              },
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        } else {
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'Could not save NFT data. Please try again.',
+            });
+            console.error(error);
+        }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCopyToClipboard = () => {
