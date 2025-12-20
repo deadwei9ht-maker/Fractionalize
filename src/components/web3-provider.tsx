@@ -1,15 +1,24 @@
 
 'use client';
 
-import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5/react';
-import { WagmiConfig, createConfig } from 'wagmi';
+import { createWeb3Modal } from '@web3modal/ethers5/react';
+import { WagmiConfig, createConfig, configureChains } from 'wagmi';
+import { publicProvider } from 'wagmi/providers/public';
 import { baseSepolia } from 'wagmi/chains';
+import { walletConnect, injected } from 'wagmi/connectors';
 import * as React from 'react';
 
-const wagmiConfig = createConfig({
-  autoConnect: true,
-  connectors: [],
-});
+// 1. Get ProjectID
+const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "e4c77c9f1acde4739414ab60742f1f61";
+if (!projectId) {
+  console.error('WalletConnect Project ID is not set.');
+}
+
+// 2. Configure wagmi client
+const { chains, publicClient, webSocketPublicClient } = configureChains(
+  [baseSepolia],
+  [publicProvider()]
+);
 
 const metadata = {
   name: "Joshi's Share",
@@ -18,28 +27,29 @@ const metadata = {
   icons: ['https://app.firebase-studio.into-the-studio.dev/favicon.ico'],
 };
 
+const wagmiConfig = createConfig({
+  autoConnect: true,
+  connectors: [
+    walletConnect({ projectId, metadata, chains, options: {} }),
+    injected({ chains, options: { shimDisconnect: true } }),
+  ],
+  publicClient,
+  webSocketPublicClient,
+});
+
+
+// 3. Create modal
+createWeb3Modal({
+  wagmiConfig,
+  projectId,
+  chains,
+  enableAnalytics: true,
+});
+
 export function Web3Provider({ children }: { children: React.ReactNode }) {
   const [initialized, setInitialized] = React.useState(false);
 
   React.useEffect(() => {
-    // Use the user's project ID if available, otherwise fall back to a public demo ID.
-    const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "e4c77c9f1acde4739414ab60742f1f61";
-    if (!projectId) {
-      // This case should not be reached with the fallback in place.
-      console.error('WalletConnect Project ID is not set.');
-      return;
-    }
-
-    createWeb3Modal({
-      ethersConfig: defaultConfig({
-        metadata,
-        defaultChainId: baseSepolia.id,
-      }),
-      chains: [baseSepolia],
-      projectId,
-      enableAnalytics: true,
-    });
-
     setInitialized(true);
   }, []);
 
