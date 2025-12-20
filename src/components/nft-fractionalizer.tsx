@@ -21,6 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "./ui/skeleton";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import { UniswapDialog } from "./uniswap-dialog";
 
 export function NFTFractionalizer() {
   const { toast } = useToast();
@@ -32,6 +33,8 @@ export function NFTFractionalizer() {
   const [showResult, setShowResult] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isUniswapDialogOpen, setIsUniswapDialogOpen] = useState(false);
+
 
   useEffect(() => {
     // This effect runs only on the client-side after hydration
@@ -105,96 +108,112 @@ export function NFTFractionalizer() {
   };
 
   const handleAddToUniswap = () => {
-    alert("Uniswap pool created! (Testnet)\nCheck Goerli Etherscan.");
+    setIsUniswapDialogOpen(true);
+  };
+  
+  const handleUniswapConfirm = () => {
+    setIsUniswapDialogOpen(false);
+    toast({
+      title: "Uniswap Pool Created! (Testnet)",
+      description: `Liquidity pool for $FRAC-${tokenId} is now live.`,
+    });
   };
 
   return (
-    <Card className="w-full max-w-md border-accent bg-card shadow-[0_0_30px_hsl(var(--accent)/0.3)] rounded-[20px]">
-      <CardHeader className="text-center">
-        <CardTitle className="text-3xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
-          Fractionalize Any NFT
-        </CardTitle>
-        <CardDescription className="pt-2 text-white/80">
-          Turn 1 NFT → 10,000 tradable tokens in{" "}
-          <strong className="text-white">1 click</strong>.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-4">
-        <Input
-          type="text"
-          id="nft"
-          placeholder="NFT Contract (0x...)"
-          value={nftContract}
-          onChange={(e) => setNftContract(e.target.value)}
-          disabled={isLoading}
-          className="h-12 rounded-lg border-border/50 bg-input text-base"
-        />
-        <Input
-          type="text"
-          id="id"
-          placeholder="Token ID (e.g., 42)"
-          value={tokenId}
-          onChange={(e) => {
-            const val = e.target.value;
-            // Only allow digits
-            if (/^\d*$/.test(val)) {
-              setTokenId(val);
-            }
-          }}
-          disabled={isLoading}
-          className="h-12 rounded-lg border-border/50 bg-input text-base"
-        />
-        <Button
-          id="go"
-          onClick={handleFractionalize}
-          disabled={isLoading || showResult}
-          className={cn(
-            "h-12 w-full rounded-lg bg-gradient-to-r from-accent to-primary text-lg font-bold text-primary-foreground transition-transform duration-300 hover:scale-[1.03]",
-            !showResult && "animate-pulse"
-          )}
-        >
-          {isLoading ? (
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 border-2 border-primary-foreground/50 border-t-primary-foreground rounded-full animate-spin" />
-              <span>Fractionalizing...</span>
-            </div>
-          ) : (
-            "Fractionalize Now"
-          )}
-        </Button>
-      </CardContent>
-
-      {showResult && (
-        <CardFooter className="mt-2 flex flex-col items-center gap-4 rounded-b-[20px] bg-accent/10 p-6">
-          <p className="text-center">
-            Success! Your NFT is now{" "}
-            <strong className="text-white">10,000 $FRAC</strong> tokens.
-          </p>
-          <div className="flex w-full items-center justify-center rounded-lg bg-background p-2">
-            {shareUrl ? (
-              <>
-                <span className="truncate text-sm text-accent" title={shareUrl}>
-                  {shareUrl}
-                </span>
-                <Button variant="ghost" size="icon" onClick={handleCopyToClipboard} className="ml-2 shrink-0">
-                  <Copy className="h-4 w-4" />
-                  <span className="sr-only">Copy link</span>
-                </Button>
-              </>
-            ) : (
-              <Skeleton className="h-8 w-full" />
-            )}
-          </div>
+    <>
+      <Card className="w-full max-w-md border-accent bg-card shadow-[0_0_30px_hsl(var(--accent)/0.3)] rounded-[20px]">
+        <CardHeader className="text-center">
+          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
+            Fractionalize Any NFT
+          </CardTitle>
+          <CardDescription className="pt-2 text-white/80">
+            Turn 1 NFT → 10,000 tradable tokens in{" "}
+            <strong className="text-white">1 click</strong>.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+          <Input
+            type="text"
+            id="nft"
+            placeholder="NFT Contract (0x...)"
+            value={nftContract}
+            onChange={(e) => setNftContract(e.target.value)}
+            disabled={isLoading}
+            className="h-12 rounded-lg border-border/50 bg-input text-base"
+          />
+          <Input
+            type="text"
+            id="id"
+            placeholder="Token ID (e.g., 42)"
+            value={tokenId}
+            onChange={(e) => {
+              const val = e.target.value;
+              // Only allow digits
+              if (/^\d*$/.test(val)) {
+                setTokenId(val);
+              }
+            }}
+            disabled={isLoading}
+            className="h-12 rounded-lg border-border/50 bg-input text-base"
+          />
           <Button
-            id="uniswap"
-            onClick={handleAddToUniswap}
-            variant="secondary"
-            className="w-full"
+            id="go"
+            onClick={handleFractionalize}
+            disabled={isLoading || showResult}
+            className={cn(
+              "h-12 w-full rounded-lg bg-gradient-to-r from-accent to-primary text-lg font-bold text-primary-foreground transition-transform duration-300 hover:scale-[1.03]",
+              !showResult && "animate-pulse"
+            )}
           >
-            Add to Uniswap (Testnet)
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 border-2 border-primary-foreground/50 border-t-primary-foreground rounded-full animate-spin" />
+                <span>Fractionalizing...</span>
+              </div>
+            ) : (
+              "Fractionalize Now"
+            )}
           </Button>
-        </CardFooter>
-      )}
-    </Card>
+        </CardContent>
+
+        {showResult && (
+          <CardFooter className="mt-2 flex flex-col items-center gap-4 rounded-b-[20px] bg-accent/10 p-6">
+            <p className="text-center">
+              Success! Your NFT is now{" "}
+              <strong className="text-white">10,000 $FRAC-{tokenId}</strong> tokens.
+            </p>
+            <div className="flex w-full items-center justify-center rounded-lg bg-background p-2">
+              {shareUrl ? (
+                <>
+                  <span className="truncate text-sm text-accent" title={shareUrl}>
+                    {shareUrl}
+                  </span>
+                  <Button variant="ghost" size="icon" onClick={handleCopyToClipboard} className="ml-2 shrink-0">
+                    <Copy className="h-4 w-4" />
+                    <span className="sr-only">Copy link</span>
+                  </Button>
+                </>
+              ) : (
+                <Skeleton className="h-8 w-full" />
+              )}
+            </div>
+            <Button
+              id="uniswap"
+              onClick={handleAddToUniswap}
+              variant="secondary"
+              className="w-full"
+            >
+              Add to Uniswap (Testnet)
+            </Button>
+          </CardFooter>
+        )}
+      </Card>
+      <UniswapDialog 
+        open={isUniswapDialogOpen}
+        onOpenChange={setIsUniswapDialogOpen}
+        onConfirm={handleUniswapConfirm}
+        tokenId={tokenId}
+      />
+    </>
   );
 }
