@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { FirebaseProvider } from '@/firebase/provider';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { Web3Provider } from '@/components/web3-provider';
+import { Header } from '@/components/header';
 
 export const metadata: Metadata = {
   title: 'NFT Fractionalizer',
@@ -33,6 +34,7 @@ export default function RootLayout({
       <body className={cn('font-body antialiased')}>
         <Web3Provider>
           <FirebaseProvider>
+            <Header />
             {children}
             <Toaster />
             <FirebaseErrorListener />
