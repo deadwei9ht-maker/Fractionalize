@@ -8,7 +8,7 @@ import { Web3Provider } from '@/components/web3-provider';
 import { Header } from '@/components/header';
 
 export const metadata: Metadata = {
-  title: 'Joshi Fragments',
+  title: 'Joshi Fractions',
   description: 'Turn any NFT into 10,000 tradable tokens in 1 click.',
 };
 
