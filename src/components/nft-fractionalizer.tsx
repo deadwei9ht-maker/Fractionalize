@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { Copy } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -64,37 +64,44 @@ export function NFTFractionalizer() {
     if (!db) return;
 
     setIsLoading(true);
-    try {
-      await addDoc(collection(db, "fractionalizedNfts"), {
-        userId: user.uid,
-        nftContract,
-        tokenId,
-        createdAt: new Date(),
-      });
-      setShowResult(true);
-    } catch (error: any) {
+    
+    const nftData = {
+      userId: user.uid,
+      nftContract,
+      tokenId,
+      createdAt: serverTimestamp(),
+    };
+
+    const collectionRef = collection(db, "fractionalizedNfts");
+
+    addDoc(collectionRef, nftData)
+      .then(() => {
+        setShowResult(true);
+      })
+      .catch((error: any) => {
         if (error.code === 'permission-denied') {
-            const permissionError = new FirestorePermissionError({
-              path: 'fractionalizedNfts',
-              operation: 'create',
-              requestResourceData: {
-                userId: user.uid,
-                nftContract,
-                tokenId,
-              },
-            });
-            errorEmitter.emit('permission-error', permissionError);
+          const permissionError = new FirestorePermissionError({
+            path: collectionRef.path,
+            operation: 'create',
+            requestResourceData: {
+              ...nftData,
+              // serverTimestamp is not resolved on the client, so we remove it for the error
+              createdAt: 'SERVER_TIMESTAMP' 
+            },
+          });
+          errorEmitter.emit('permission-error', permissionError);
         } else {
             toast({
                 variant: 'destructive',
                 title: 'Error',
                 description: 'Could not save NFT data. Please try again.',
             });
-            console.error(error);
+            console.error("An unexpected error occurred:", error);
         }
-    } finally {
-      setIsLoading(false);
-    }
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   const handleCopyToClipboard = () => {
