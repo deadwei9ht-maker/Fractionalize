@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -230,3 +231,5 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
     </>
   );
 }
+
+    
