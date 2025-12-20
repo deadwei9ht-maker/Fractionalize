@@ -143,9 +143,7 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
          const nftData = {
            userId: user.uid,
            nftContract: nftContract,
-           tokenId: newId, // We use the *new* ID from the event for our shares
-           originalTokenId: tokenId,
-           originalContract: nftContract,
+           tokenId: newId,
            createdAt: new Date().toISOString(),
          };
          await saveFractionalizedNft(db, nftData);
