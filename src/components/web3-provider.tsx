@@ -1,22 +1,22 @@
 'use client';
 
 import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5/react';
-import { WagmiConfig, configureChains, createConfig } from 'wagmi';
-import { publicProvider } from 'wagmi/providers/public';
+import { WagmiConfig, createConfig } from 'wagmi';
 import { mainnet, goerli } from 'wagmi/chains';
 import * as React from 'react';
 
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
+if (!projectId) {
+  console.warn("WalletConnect Project ID is not set. Wallet functionality will be disabled. Please set NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID in your environment variables.");
+}
 
-const { chains, publicClient } = configureChains(
-  [mainnet, goerli],
-  [publicProvider()]
-);
+const chains = [mainnet, goerli];
 
 const wagmiConfig = createConfig({
   autoConnect: true,
-  publicClient,
+  connectors: [],
 });
+
 
 // Only initialize Web3Modal if the project ID is available
 if (projectId) {
@@ -36,8 +36,6 @@ if (projectId) {
     projectId,
     enableAnalytics: true,
   });
-} else {
-    console.warn("WalletConnect Project ID is not set. Wallet functionality will be disabled. Please set NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID in your environment variables.");
 }
 
 export function Web3Provider({ children }: { children: React.ReactNode }) {
