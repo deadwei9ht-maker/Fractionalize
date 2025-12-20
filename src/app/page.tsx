@@ -7,6 +7,13 @@ import { UserAuth } from '@/components/user-auth';
 import { WalletConnectButton } from '@/components/wallet-connect-button';
 import { OwnedNfts, type OwnedNft } from '@/components/owned-nfts';
 import { Separator } from '@/components/ui/separator';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 export default function Home() {
   const [selectedNft, setSelectedNft] = useState<OwnedNft | null>(null);
@@ -17,12 +24,12 @@ export default function Home() {
         <WalletConnectButton />
         <UserAuth />
       </div>
-      <div className="flex w-full max-w-5xl flex-col items-center gap-8 lg:flex-row lg:items-start lg:gap-12">
+      <div className="flex w-full max-w-7xl flex-col items-center gap-8 lg:flex-row lg:items-start lg:gap-12">
         <div className="w-full max-w-md">
           <NFTFractionalizer selectedNft={selectedNft} />
         </div>
         <Separator orientation="vertical" className="hidden h-auto lg:block" />
-        <div className="w-full max-w-md">
+        <div className="flex w-full flex-col gap-8 lg:max-w-none lg:flex-1">
           <OwnedNfts onNftSelect={setSelectedNft} selectedNft={selectedNft} />
           <NFTList />
         </div>
