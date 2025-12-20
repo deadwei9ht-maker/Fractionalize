@@ -22,25 +22,28 @@ type FractionalizedNft = {
   userId: string;
 };
 
+// NOTE: Using a hardcoded free Alchemy API key.
+// In a real app, this should be a private environment variable.
+const ALCHEMY_API_KEY = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY || 'demo';
+
 const NFTListItem = ({ nft }: { nft: FractionalizedNft }) => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchMetadata = async () => {
+      setLoading(true);
       try {
-        // Using a public gateway to fetch NFT metadata
-        const metadataUrl = `https://ipfs.io/ipfs/bafybeiccfax36q2xqj2mopkvz47s53xdmvkapbkrkyq2iaykvqgcgweovi/${nft.tokenId}.json`;
-        const metadataResponse = await fetch(metadataUrl);
-        if (!metadataResponse.ok) {
-          throw new Error("Failed to fetch metadata");
+        const response = await fetch(
+          `https://eth-goerli.g.alchemy.com/nft/v2/${ALCHEMY_API_KEY}/getNFTMetadata?contractAddress=${nft.nftContract}&tokenId=${nft.tokenId}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch metadata from Alchemy");
         }
-        const metadata = await metadataResponse.json();
+        const data = await response.json();
         
-        // Assuming the image URL is in a standard format
-        const image = metadata.image || metadata.image_url;
+        const image = data.media?.[0]?.gateway || data.metadata?.image;
         if (image) {
-          // Replace ipfs:// protocol if present
           setImageUrl(image.replace("ipfs://", "https://ipfs.io/ipfs/"));
         } else {
            setImageUrl("https://picsum.photos/seed/error/64/64");
@@ -55,7 +58,7 @@ const NFTListItem = ({ nft }: { nft: FractionalizedNft }) => {
     };
 
     fetchMetadata();
-  }, [nft.tokenId]);
+  }, [nft.tokenId, nft.nftContract]);
 
   return (
     <div
