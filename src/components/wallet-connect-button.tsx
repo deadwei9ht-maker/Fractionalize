@@ -13,7 +13,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from './ui/avatar';
-import { copy } from 'fs-extra';
 
 export function WalletConnectButton() {
   const { open } = useWeb3Modal();
