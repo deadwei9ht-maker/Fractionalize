@@ -10,19 +10,19 @@
     --card-foreground: 0 0% 98%;
     --popover: 240 33% 14%;
     --popover-foreground: 0 0% 98%;
-    --primary: 198 100% 50%; /* Neon Blue */
+    --primary: 300 100% 50%; /* #FF00FF */
     --primary-foreground: 0 0% 98%;
     --secondary: 240 33% 20%;
     --secondary-foreground: 0 0% 98%;
     --muted: 240 33% 20%;
     --muted-foreground: 0 0% 60%;
-    --accent: 198 100% 50%; /* Neon Blue */
-    --accent-foreground: 0 0% 98%;
+    --accent: 180 100% 50%; /* #00FFEA */
+    --accent-foreground: 240 50% 5%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 198 100% 40%;
+    --border: 180 100% 30%;
     --input: 223 50% 17%; /* #16213e */
-    --ring: 198 100% 50%;
+    --ring: 180 100% 50%;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -45,19 +45,19 @@
     --card-foreground: 0 0% 98%;
     --popover: 240 33% 14%;
     --popover-foreground: 0 0% 98%;
-    --primary: 198 100% 50%; /* Neon Blue */
+    --primary: 300 100% 50%; /* #FF00FF */
     --primary-foreground: 0 0% 98%;
     --secondary: 240 33% 20%;
     --secondary-foreground: 0 0% 98%;
     --muted: 240 33% 20%;
     --muted-foreground: 0 0% 60%;
-    --accent: 198 100% 50%; /* Neon Blue */
-    --accent-foreground: 0 0% 98%;
+    --accent: 180 100% 50%; /* #00FFEA */
+    --accent-foreground: 240 50% 5%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 198 100% 40%;
+    --border: 180 100% 30%;
     --input: 223 50% 17%;
-    --ring: 198 100% 50%;
+    --ring: 180 100% 50%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
