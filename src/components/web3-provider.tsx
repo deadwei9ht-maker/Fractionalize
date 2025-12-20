@@ -6,50 +6,55 @@ import { WagmiConfig, createConfig } from 'wagmi';
 import { baseSepolia } from 'wagmi/chains';
 import * as React from 'react';
 
-// The project ID is defined directly here. In a real-world scenario, this should
-// still be loaded from environment variables, but the check and usage must be
-// strictly client-side.
-const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
-
-// The wagmiConfig is created here, but it will only be used inside the provider
-// which will ensure it's client-side.
-if (!projectId) {
-  throw new Error('NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is not set. Please check your .env.local file.');
-}
-
-const metadata = {
-  name: "Joshi's Share",
-  description: 'Turn any NFT into 10,000 tradable shares in 1 click.',
-  url: 'https://app.firebase-studio.into-the-studio.dev/',
-  icons: ['https://app.firebase-studio.into-the-studio.dev/favicon.ico'],
-};
-
-const chains = [baseSepolia];
-
-const wagmiConfig = createConfig({
-  chains,
-  ...defaultConfig({
-    metadata,
-    chains,
-    projectId: projectId, 
-  }),
-});
-
-// The modal is created here, but again, its use is deferred to the client.
-createWeb3Modal({
-  ethersConfig: wagmiConfig,
-  chains,
-  projectId: projectId,
-  enableAnalytics: true,
-});
-
+// This is a client-only component, so we can safely use state and effects.
 export function Web3Provider({ children }: { children: React.ReactNode }) {
-  // This state ensures that we only render the children on the client side.
-  const [initialized, setInitialized] = React.useState(false);
+  // We use state to hold the config and ensure we only initialize once.
+  const [wagmiConfig, setWagmiConfig] = React.useState<any>(null);
 
   React.useEffect(() => {
-    setInitialized(true);
-  }, []);
+    // This code will only run on the client side.
+    const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
+    if (!projectId) {
+      console.error('NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is not set. Please check your .env.local file.');
+      return;
+    }
 
-  return <WagmiConfig config={wagmiConfig}>{initialized ? children : null}</WagmiConfig>;
+    const metadata = {
+      name: "Joshi's Share",
+      description: 'Turn any NFT into 10,000 tradable shares in 1 click.',
+      url: 'https://app.firebase-studio.into-the-studio.dev/',
+      icons: ['https://app.firebase-studio.into-the-studio.dev/favicon.ico'],
+    };
+
+    const chains = [baseSepolia];
+    
+    // Create the config inside the effect.
+    const config = createConfig({
+      ...defaultConfig({
+        metadata,
+        chains,
+        projectId,
+      }),
+      chains,
+    });
+
+    // Create the modal inside the effect.
+    createWeb3Modal({
+      ethersConfig: config,
+      chains,
+      projectId,
+      enableAnalytics: true,
+    });
+    
+    // Set the config in state so the WagmiConfig provider can use it.
+    setWagmiConfig(config);
+
+  }, []); // The empty dependency array ensures this effect runs only once on mount.
+
+  // We only render the children after the config has been initialized on the client.
+  if (!wagmiConfig) {
+    return null;
+  }
+
+  return <WagmiConfig config={wagmiConfig}>{children}</WagmiConfig>;
 }
