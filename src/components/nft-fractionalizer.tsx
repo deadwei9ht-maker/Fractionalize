@@ -22,15 +22,17 @@ import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "./ui/skeleton";
 import { UniswapDialog } from "./uniswap-dialog";
 import type { OwnedNft } from "./owned-nfts";
+import { saveFractionalizedNft } from "@/lib/firestore-actions";
+import { useFirestore } from "@/firebase";
 
 type NFTFractionalizerProps = {
   selectedNft?: OwnedNft | null;
 };
 
-// Your new contract address
+// The user-provided contract address
 const fractionalizerContractAddress = "0xd9145CCE52D386f254917e481eB44e9943F39138";
 
-// The ABI for your JoshiFractions contract
+// The ABI for the JoshiFractions contract
 const fractionalizerAbi = [
   "function fractionalize(address _nftContractAddress, uint256 _nftTokenId)",
   "event NFTFractionalized(uint256 indexed newTokenId, address indexed nftContractAddress, uint256 indexed nftTokenId, address originalOwner, uint256 shareAmount)"
@@ -45,6 +47,7 @@ const erc721Abi = [
 export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
   const { toast } = useToast();
   const { user } = useUser();
+  const db = useFirestore();
   const provider = useEthersProvider();
   const signer = useEthersSigner();
 
@@ -78,7 +81,7 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
   }, [showResult, newFractionTokenId]);
 
   const handleFractionalize = async () => {
-    if (!user) {
+    if (!user || !db) {
       toast({
         variant: "destructive",
         title: "Authentication Required",
@@ -134,6 +137,19 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
       const event = receipt.events?.find((e: ethers.Event) => e.event === 'NFTFractionalized');
       if (event && event.args) {
          const newId = event.args.newTokenId.toString();
+         
+         // 5. Save the record to Firestore
+         setLoadingMessage("Saving record...");
+         const nftData = {
+           userId: user.uid,
+           nftContract: nftContract,
+           tokenId: newId, // We use the *new* ID from the event for our shares
+           originalTokenId: tokenId,
+           originalContract: nftContract,
+           createdAt: new Date().toISOString(),
+         };
+         await saveFractionalizedNft(db, nftData);
+
          setNewFractionTokenId(newId);
          setShowResult(true);
          toast({
@@ -279,5 +295,3 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
     </>
   );
 }
-
-    
