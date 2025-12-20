@@ -79,25 +79,16 @@ export function NFTFractionalizer() {
         setShowResult(true);
       })
       .catch((error: any) => {
-        if (error.code === 'permission-denied') {
-          const permissionError = new FirestorePermissionError({
-            path: collectionRef.path,
-            operation: 'create',
-            requestResourceData: {
-              ...nftData,
-              // serverTimestamp is not resolved on the client, so we remove it for the error
-              createdAt: 'SERVER_TIMESTAMP' 
-            },
-          });
-          errorEmitter.emit('permission-error', permissionError);
-        } else {
-            toast({
-                variant: 'destructive',
-                title: 'Error',
-                description: 'Could not save NFT data. Please try again.',
-            });
-            console.error("An unexpected error occurred:", error);
-        }
+        const permissionError = new FirestorePermissionError({
+          path: collectionRef.path,
+          operation: 'create',
+          requestResourceData: {
+            ...nftData,
+            // serverTimestamp is not resolved on the client, so we remove it for the error
+            createdAt: 'SERVER_TIMESTAMP' 
+          },
+        });
+        errorEmitter.emit('permission-error', permissionError);
       })
       .finally(() => {
         setIsLoading(false);
