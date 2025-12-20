@@ -19,6 +19,31 @@
         }
       },
       "required": ["displayName", "email"]
+    },
+    "FractionalizedNft": {
+      "title": "Fractionalized NFT",
+      "description": "Represents an NFT that has been fractionalized.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "The ID of the user who fractionalized the NFT."
+        },
+        "nftContract": {
+          "type": "string",
+          "description": "The contract address of the NFT."
+        },
+        "tokenId": {
+          "type": "string",
+          "description": "The token ID of the NFT."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the NFT was fractionalized."
+        }
+      },
+      "required": ["userId", "nftContract", "tokenId", "createdAt"]
     }
   },
   "auth": {
@@ -30,6 +55,12 @@
         "$ref": "#/backend/entities/UserProfile"
       },
       "description": "Stores public information about a user."
+    },
+    "/fractionalizedNfts/{nftId}": {
+      "schema": {
+        "$ref": "#/backend/entities/FractionalizedNft"
+      },
+      "description": "Stores information about fractionalized NFTs."
     }
   }
 }
