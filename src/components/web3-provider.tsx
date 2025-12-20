@@ -29,14 +29,11 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
     const chains = [baseSepolia];
     
     // Create the config inside the effect.
-    const config = createConfig({
-      ...defaultConfig({
-        metadata,
-        chains,
-        projectId,
-      }),
+    const config = createConfig(defaultConfig({
+      metadata,
       chains,
-    });
+      projectId,
+    }));
 
     // Create the modal inside the effect.
     createWeb3Modal({
