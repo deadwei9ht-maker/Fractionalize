@@ -22,8 +22,13 @@ import { Skeleton } from "./ui/skeleton";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { UniswapDialog } from "./uniswap-dialog";
+import type { OwnedNft } from "./owned-nfts";
 
-export function NFTFractionalizer() {
+type NFTFractionalizerProps = {
+  selectedNft?: OwnedNft | null;
+};
+
+export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
   const { toast } = useToast();
   const db = useFirestore();
   const { user } = useUser();
@@ -35,6 +40,14 @@ export function NFTFractionalizer() {
   const [isLoading, setIsLoading] = useState(false);
   const [isUniswapDialogOpen, setIsUniswapDialogOpen] = useState(false);
 
+  useEffect(() => {
+    if (selectedNft) {
+      setNftContract(selectedNft.contract.address);
+      setTokenId(selectedNft.tokenId);
+      setShowResult(false);
+      setShareUrl("");
+    }
+  }, [selectedNft]);
 
   useEffect(() => {
     // This effect runs only on the client-side after hydration

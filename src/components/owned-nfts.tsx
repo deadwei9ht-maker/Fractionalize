@@ -13,12 +13,13 @@ import { Skeleton } from './ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Wallet, Info } from 'lucide-react';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 // NOTE: Using a hardcoded free Alchemy API key.
 // In a real app, this should be a private environment variable.
 const ALCHEMY_API_KEY = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY || 'demo';
 
-type OwnedNft = {
+export type OwnedNft = {
   contract: {
     address: string;
   };
@@ -29,7 +30,12 @@ type OwnedNft = {
   title: string;
 };
 
-export function OwnedNfts() {
+type OwnedNftsProps = {
+  onNftSelect: (nft: OwnedNft) => void;
+  selectedNft?: OwnedNft | null;
+};
+
+export function OwnedNfts({ onNftSelect, selectedNft }: OwnedNftsProps) {
   const { address, isConnected } = useAccount();
   const [nfts, setNfts] = useState<OwnedNft[]>([]);
   const [loading, setLoading] = useState(false);
@@ -92,7 +98,7 @@ export function OwnedNfts() {
       <CardHeader>
         <CardTitle>Your Wallet NFTs</CardTitle>
         <CardDescription>
-          This is a list of NFTs in your connected wallet.
+          Click an NFT to select it for fractionalization.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -124,7 +130,15 @@ export function OwnedNfts() {
         {!loading && nfts.length > 0 && (
           <div className="grid grid-cols-3 gap-4">
             {nfts.map((nft) => (
-              <div key={`${nft.contract.address}-${nft.tokenId}`} className="relative aspect-square w-full rounded-md overflow-hidden bg-muted">
+              <button
+                key={`${nft.contract.address}-${nft.tokenId}`}
+                className={cn(
+                  'relative aspect-square w-full rounded-md overflow-hidden bg-muted transition-all duration-200',
+                  'outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background',
+                  selectedNft?.tokenId === nft.tokenId && selectedNft?.contract.address === nft.contract.address && 'ring-2 ring-accent ring-offset-2 ring-offset-background'
+                )}
+                onClick={() => onNftSelect(nft)}
+              >
                 <Image
                   src={nft.media[0]?.gateway || "https://picsum.photos/seed/placeholder/128/128"}
                   alt={nft.title || 'NFT Image'}
@@ -133,7 +147,7 @@ export function OwnedNfts() {
                   className="object-cover"
                   data-ai-hint="nft owned"
                 />
-              </div>
+              </button>
             ))}
           </div>
         )}
