@@ -2,11 +2,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { Copy } from "lucide-react";
+import { ethers } from "ethers";
+import { useEthersProvider, useEthersSigner } from "@/hooks/use-ethers";
 
 import { cn } from "@/lib/utils";
-import { useFirestore } from "@/firebase";
 import { useUser } from "@/firebase/auth/use-user";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,8 +20,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "./ui/skeleton";
-import { errorEmitter } from "@/firebase/error-emitter";
-import { FirestorePermissionError } from "@/firebase/errors";
 import { UniswapDialog } from "./uniswap-dialog";
 import type { OwnedNft } from "./owned-nfts";
 
@@ -29,17 +27,36 @@ type NFTFractionalizerProps = {
   selectedNft?: OwnedNft | null;
 };
 
+// Your new contract address
+const fractionalizerContractAddress = "0xd9145CCE52D386f254917e481eB44e9943F39138";
+
+// The ABI for your JoshiFractions contract
+const fractionalizerAbi = [
+  "function fractionalize(address _nftContractAddress, uint256 _nftTokenId)",
+  "event NFTFractionalized(uint256 indexed newTokenId, address indexed nftContractAddress, uint256 indexed nftTokenId, address originalOwner, uint256 shareAmount)"
+];
+
+// A generic ABI for the approve function on any ERC721 NFT
+const erc721Abi = [
+  "function approve(address to, uint256 tokenId)",
+  "function getApproved(uint256 tokenId)"
+];
+
 export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
   const { toast } = useToast();
-  const db = useFirestore();
   const { user } = useUser();
+  const provider = useEthersProvider();
+  const signer = useEthersSigner();
 
   const [nftContract, setNftContract] = useState("");
   const [tokenId, setTokenId] = useState("");
   const [showResult, setShowResult] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("Fractionalizing...");
   const [isUniswapDialogOpen, setIsUniswapDialogOpen] = useState(false);
+  const [newFractionTokenId, setNewFractionTokenId] = useState<string | null>(null);
+
 
   useEffect(() => {
     if (selectedNft) {
@@ -47,17 +64,18 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
       setTokenId(selectedNft.tokenId);
       setShowResult(false);
       setShareUrl("");
+      setNewFractionTokenId(null);
     }
   }, [selectedNft]);
 
   useEffect(() => {
     // This effect runs only on the client-side after hydration
-    if (showResult) {
+    if (showResult && newFractionTokenId) {
       const url = new URL(window.location.href);
-      url.hash = tokenId;
+      url.searchParams.set("token", newFractionTokenId);
       setShareUrl(url.toString());
     }
-  }, [showResult, tokenId]);
+  }, [showResult, newFractionTokenId]);
 
   const handleFractionalize = async () => {
     if (!user) {
@@ -65,6 +83,14 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
         variant: "destructive",
         title: "Authentication Required",
         description: "Please log in to fractionalize an NFT.",
+      });
+      return;
+    }
+    if (!signer || !provider) {
+      toast({
+        variant: "destructive",
+        title: "Wallet Not Connected",
+        description: "Please connect your wallet to fractionalize an NFT.",
       });
       return;
     }
@@ -78,38 +104,58 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
       return;
     }
 
-    if (!db) return;
-
     setIsLoading(true);
-    
-    const nftData = {
-      userId: user.uid,
-      nftContract,
-      tokenId,
-      createdAt: serverTimestamp(),
-    };
+    setShowResult(false);
+    setNewFractionTokenId(null);
 
-    const collectionRef = collection(db, "fractionalizedNfts");
+    try {
+      // 1. Get contract instances
+      const nft = new ethers.Contract(nftContract, erc721Abi, signer);
+      const fractionalizer = new ethers.Contract(fractionalizerContractAddress, fractionalizerAbi, signer);
 
-    addDoc(collectionRef, nftData)
-      .then(() => {
-        setShowResult(true);
-      })
-      .catch((error: any) => {
-        const permissionError = new FirestorePermissionError({
-          path: collectionRef.path,
-          operation: 'create',
-          requestResourceData: {
-            ...nftData,
-            // serverTimestamp is not resolved on the client, so we remove it for the error
-            createdAt: 'SERVER_TIMESTAMP' 
-          },
-        });
-        errorEmitter.emit('permission-error', permissionError);
-      })
-      .finally(() => {
-        setIsLoading(false);
+      // 2. Check for and request approval
+      setLoadingMessage("Checking NFT approval...");
+      const approvedAddress = await nft.getApproved(tokenId);
+      if (approvedAddress.toLowerCase() !== fractionalizerContractAddress.toLowerCase()) {
+        setLoadingMessage("Awaiting approval transaction...");
+        const approvalTx = await nft.approve(fractionalizerContractAddress, tokenId);
+        setLoadingMessage("Confirming approval...");
+        await approvalTx.wait();
+      }
+
+      // 3. Call the fractionalize function
+      setLoadingMessage("Executing fractionalization...");
+      const fractionalizeTx = await fractionalizer.fractionalize(nftContract, tokenId);
+      
+      setLoadingMessage("Confirming fractionalization...");
+      const receipt = await fractionalizeTx.wait();
+      
+      // 4. Find the event to get the new token ID
+      const event = receipt.events?.find((e: ethers.Event) => e.event === 'NFTFractionalized');
+      if (event && event.args) {
+         const newId = event.args.newTokenId.toString();
+         setNewFractionTokenId(newId);
+         setShowResult(true);
+         toast({
+            title: "Success!",
+            description: `Your NFT is now 10,000 $SHARE-${newId} tokens.`,
+         });
+      } else {
+        throw new Error("Could not find NFTFractionalized event in transaction receipt.");
+      }
+
+    } catch (error: any) {
+      console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Transaction Failed",
+        description: error.reason || error.message || "An unknown error occurred.",
       });
+      setShowResult(false);
+    } finally {
+      setIsLoading(false);
+      setLoadingMessage("Fractionalizing...");
+    }
   };
 
   const handleCopyToClipboard = () => {
@@ -129,9 +175,11 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
     setIsUniswapDialogOpen(false);
     toast({
       title: "Uniswap Pool Created! (Testnet)",
-      description: `Liquidity pool for $SHARE-${tokenId} is now live.`,
+      description: `Liquidity pool for $SHARE-${newFractionTokenId} is now live.`,
     });
   };
+
+  const displayTokenId = newFractionTokenId || tokenId;
 
   return (
     <>
@@ -182,7 +230,7 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
             {isLoading ? (
               <div className="flex items-center gap-2">
                 <div className="w-5 h-5 border-2 border-primary-foreground/50 border-t-primary-foreground rounded-full animate-spin" />
-                <span>Fractionalizing...</span>
+                <span>{loadingMessage}</span>
               </div>
             ) : (
               "Fractionalize Now"
@@ -194,7 +242,7 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
           <CardFooter className="mt-2 flex flex-col items-center gap-4 rounded-b-[20px] bg-accent/10 p-6">
             <p className="text-center">
               Success! Your NFT is now{" "}
-              <strong className="text-white">10,000 $SHARE-{tokenId}</strong> tokens.
+              <strong className="text-white">10,000 $SHARE-{displayTokenId}</strong> tokens.
             </p>
             <div className="flex w-full items-center justify-center rounded-lg bg-background p-2">
               {shareUrl ? (
@@ -226,8 +274,10 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
         open={isUniswapDialogOpen}
         onOpenChange={setIsUniswapDialogOpen}
         onConfirm={handleUniswapConfirm}
-        tokenId={tokenId}
+        tokenId={displayTokenId}
       />
     </>
   );
 }
+
+    
