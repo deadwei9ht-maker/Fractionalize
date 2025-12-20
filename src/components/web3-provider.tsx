@@ -1,25 +1,21 @@
 
 'use client';
 
-import { createWeb3Modal } from '@web3modal/ethers5/react';
-import { WagmiConfig, createConfig, configureChains } from 'wagmi';
-import { publicProvider } from 'wagmi/providers/public';
+import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5/react';
+import { WagmiConfig } from 'wagmi';
 import { baseSepolia } from 'wagmi/chains';
-import { walletConnect } from 'wagmi/connectors/walletConnect';
-import { InjectedConnector } from 'wagmi/connectors/injected';
 import * as React from 'react';
 
 // 1. Get ProjectID
-const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "e4c77c9f1acde4739414ab60742f1f61";
+const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
 if (!projectId) {
-  console.error('WalletConnect Project ID is not set.');
+  // Using a default public project ID as a fallback.
+  // It's highly recommended to get your own project ID from https://cloud.walletconnect.com
+  console.warn("WalletConnect Project ID is not set. Using a default public ID.");
 }
 
 // 2. Configure wagmi client
-const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [baseSepolia],
-  [publicProvider()]
-);
+const chains = [baseSepolia];
 
 const metadata = {
   name: "Joshi's Share",
@@ -28,26 +24,22 @@ const metadata = {
   icons: ['https://app.firebase-studio.into-the-studio.dev/favicon.ico'],
 };
 
-const wagmiConfig = createConfig({
-  autoConnect: true,
-  connectors: [
-    walletConnect({ projectId, metadata, chains, options: {} }),
-    new InjectedConnector({ chains, options: { shimDisconnect: true } }),
-  ],
-  publicClient,
-  webSocketPublicClient,
+const wagmiConfig = defaultConfig({
+  metadata,
+  chains,
+  projectId: projectId || 'e4c77c9f1acde4739414ab60742f1f61', // Fallback ID
 });
-
 
 // 3. Create modal
 createWeb3Modal({
-  wagmiConfig,
-  projectId,
+  ethersConfig: wagmiConfig,
   chains,
+  projectId: projectId || 'e4c77c9f1acde4739414ab60742f1f61', // Fallback ID
   enableAnalytics: true,
 });
 
 export function Web3Provider({ children }: { children: React.ReactNode }) {
+  // The initialized state is used to prevent hydration errors.
   const [initialized, setInitialized] = React.useState(false);
 
   React.useEffect(() => {
