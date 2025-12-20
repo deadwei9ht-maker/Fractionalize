@@ -36,7 +36,7 @@ export function UniswapDialog({ open, onOpenChange, onConfirm, tokenId }: Uniswa
         <div className="grid gap-4 py-4">
           <div className="flex flex-col gap-1 text-sm">
             <p className="text-muted-foreground">You are supplying:</p>
-            <p className="font-semibold text-white">10,000 $FRAC-{tokenId}</p>
+            <p className="font-semibold text-white">10,000 $SHARE-{tokenId}</p>
             <p className="font-semibold text-white">+ 1 ETH (Testnet)</p>
           </div>
           <div className="text-xs text-muted-foreground/80">

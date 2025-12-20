@@ -12,8 +12,8 @@ const wagmiConfig = createConfig({
 });
 
 const metadata = {
-  name: 'Joshi Fractions',
-  description: 'Turn any NFT into 10,000 tradable tokens in 1 click.',
+  name: "Joshi's Share",
+  description: 'Turn any NFT into 10,000 tradable shares in 1 click.',
   url: 'https://app.firebase-studio.into-the-studio.dev/',
   icons: ['https://app.firebase-studio.into-the-studio.dev/favicon.ico'],
 };

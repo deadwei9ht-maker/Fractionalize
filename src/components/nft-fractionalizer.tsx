@@ -129,7 +129,7 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
     setIsUniswapDialogOpen(false);
     toast({
       title: "Uniswap Pool Created! (Testnet)",
-      description: `Liquidity pool for $FRAC-${tokenId} is now live.`,
+      description: `Liquidity pool for $SHARE-${tokenId} is now live.`,
     });
   };
 
@@ -141,7 +141,7 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
             Fractionalize Any NFT
           </CardTitle>
           <CardDescription className="pt-2 text-white/80">
-            Turn 1 NFT → 10,000 tradable tokens in{" "}
+            Turn 1 NFT → 10,000 tradable shares in{" "}
             <strong className="text-white">1 click</strong>.
           </CardDescription>
         </CardHeader>
@@ -194,7 +194,7 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
           <CardFooter className="mt-2 flex flex-col items-center gap-4 rounded-b-[20px] bg-accent/10 p-6">
             <p className="text-center">
               Success! Your NFT is now{" "}
-              <strong className="text-white">10,000 $FRAC-{tokenId}</strong> tokens.
+              <strong className="text-white">10,000 $SHARE-{tokenId}</strong> tokens.
             </p>
             <div className="flex w-full items-center justify-center rounded-lg bg-background p-2">
               {shareUrl ? (
@@ -231,5 +231,3 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
     </>
   );
 }
-
-    

@@ -86,7 +86,7 @@ const NFTListItem = ({ nft }: { nft: FractionalizedNft }) => {
         <p className="font-semibold truncate text-white" title={metadataName}>
           {metadataName}
         </p>
-        <p className="text-xs text-accent">10,000 $FRAC-{nft.tokenId}</p>
+        <p className="text-xs text-accent">10,000 $SHARE-{nft.tokenId}</p>
       </div>
     </div>
   );
