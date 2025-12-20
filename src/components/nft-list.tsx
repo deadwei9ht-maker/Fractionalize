@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Terminal } from "lucide-react";
+import { Terminal, Image as ImageIcon } from "lucide-react";
+import Image from "next/image";
 
 type FractionalizedNft = {
   id: string;
@@ -25,9 +26,7 @@ export function NFTList() {
   const { data: nfts, loading } = useCollection<FractionalizedNft>(
     "fractionalizedNfts",
     {
-      // The query is disabled if there is no user
       query: user ? ["userId", "==", user.uid] : undefined,
-      // We re-run the query when the user changes
       deps: [user],
     }
   );
@@ -78,12 +77,22 @@ export function NFTList() {
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        {nfts.map((nft) => (
+        {nfts.map((nft, index) => (
           <div
             key={nft.id}
-            className="flex items-center justify-between rounded-lg border border-border/50 bg-input p-3"
+            className="flex items-center justify-between rounded-lg border border-border/50 bg-input p-3 gap-4"
           >
-            <div>
+            <div className="relative h-16 w-16 rounded-md overflow-hidden bg-muted flex-shrink-0">
+              <Image 
+                src={`https://picsum.photos/seed/${nft.id}/64/64`}
+                alt={`NFT ${nft.tokenId}`}
+                width={64}
+                height={64}
+                className="object-cover"
+                data-ai-hint="nft abstract"
+              />
+            </div>
+            <div className="flex-grow overflow-hidden">
               <p className="font-mono text-sm truncate text-white" title={nft.nftContract}>{nft.nftContract}</p>
               <p className="text-xs text-muted-foreground">Token ID: {nft.tokenId}</p>
             </div>
