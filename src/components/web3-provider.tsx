@@ -22,9 +22,11 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
   const [initialized, setInitialized] = React.useState(false);
 
   React.useEffect(() => {
-    const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
+    // Use the user's project ID if available, otherwise fall back to a public demo ID.
+    const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "e4c77c9f1acde4739414ab60742f1f61";
     if (!projectId) {
-      console.error('NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is not set');
+      // This case should not be reached with the fallback in place.
+      console.error('WalletConnect Project ID is not set.');
       return;
     }
 
