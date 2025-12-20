@@ -13,13 +13,78 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
 import Image from "next/image";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { useEffect, useState } from "react";
 
 type FractionalizedNft = {
   id: string;
   nftContract: string;
   tokenId: string;
   userId: string;
+};
+
+const NFTListItem = ({ nft }: { nft: FractionalizedNft }) => {
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMetadata = async () => {
+      try {
+        // Using a public gateway to fetch NFT metadata
+        const metadataUrl = `https://ipfs.io/ipfs/bafybeiccfax36q2xqj2mopkvz47s53xdmvkapbkrkyq2iaykvqgcgweovi/${nft.tokenId}.json`;
+        const metadataResponse = await fetch(metadataUrl);
+        if (!metadataResponse.ok) {
+          throw new Error("Failed to fetch metadata");
+        }
+        const metadata = await metadataResponse.json();
+        
+        // Assuming the image URL is in a standard format
+        const image = metadata.image || metadata.image_url;
+        if (image) {
+          // Replace ipfs:// protocol if present
+          setImageUrl(image.replace("ipfs://", "https://ipfs.io/ipfs/"));
+        } else {
+           setImageUrl("https://picsum.photos/seed/error/64/64");
+        }
+      } catch (error) {
+        console.error("Error fetching NFT metadata:", error);
+        // Fallback image if metadata fetch fails
+        setImageUrl("https://picsum.photos/seed/fallback/64/64");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMetadata();
+  }, [nft.tokenId]);
+
+  return (
+    <div
+      key={nft.id}
+      className="flex items-center justify-between rounded-lg border border-border/50 bg-input p-3 gap-4"
+    >
+      <div className="relative h-16 w-16 rounded-md overflow-hidden bg-muted flex-shrink-0">
+        {loading ? (
+          <Skeleton className="h-full w-full" />
+        ) : (
+          <Image
+            src={imageUrl || "https://picsum.photos/seed/placeholder/64/64"}
+            alt={`NFT ${nft.tokenId}`}
+            width={64}
+            height={64}
+            className="object-cover"
+            data-ai-hint="nft image"
+            onError={() => setImageUrl("https://picsum.photos/seed/error/64/64")}
+          />
+        )}
+      </div>
+      <div className="flex-grow overflow-hidden">
+        <p className="font-mono text-sm truncate text-white" title={nft.nftContract}>
+          {nft.nftContract}
+        </p>
+        <p className="text-xs text-muted-foreground">Token ID: {nft.tokenId}</p>
+      </div>
+    </div>
+  );
 };
 
 export function NFTList() {
@@ -35,7 +100,7 @@ export function NFTList() {
   if (!user) {
     return null;
   }
-  
+
   if (loading) {
     return (
       <Card className="w-full max-w-md mt-8">
@@ -78,30 +143,9 @@ export function NFTList() {
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        {nfts.map((nft, index) => {
-          const placeholder = PlaceHolderImages[index % PlaceHolderImages.length];
-          return (
-            <div
-              key={nft.id}
-              className="flex items-center justify-between rounded-lg border border-border/50 bg-input p-3 gap-4"
-            >
-              <div className="relative h-16 w-16 rounded-md overflow-hidden bg-muted flex-shrink-0">
-                <Image 
-                  src={placeholder.imageUrl}
-                  alt={placeholder.description}
-                  width={64}
-                  height={64}
-                  className="object-cover"
-                  data-ai-hint={placeholder.imageHint}
-                />
-              </div>
-              <div className="flex-grow overflow-hidden">
-                <p className="font-mono text-sm truncate text-white" title={nft.nftContract}>{nft.nftContract}</p>
-                <p className="text-xs text-muted-foreground">Token ID: {nft.tokenId}</p>
-              </div>
-            </div>
-          );
-        })}
+        {nfts.map((nft) => (
+          <NFTListItem key={nft.id} nft={nft} />
+        ))}
       </CardContent>
     </Card>
   );
