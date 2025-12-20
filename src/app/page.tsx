@@ -1,4 +1,5 @@
 import { NFTFractionalizer } from '@/components/nft-fractionalizer';
+import { NFTList } from '@/components/nft-list';
 import { UserAuth } from '@/components/user-auth';
 
 export default function Home() {
@@ -7,7 +8,10 @@ export default function Home() {
       <div className="absolute top-4 right-4">
         <UserAuth />
       </div>
-      <NFTFractionalizer />
+      <div className='flex flex-col items-center gap-4'>
+        <NFTFractionalizer />
+        <NFTList />
+      </div>
     </main>
   );
 }
