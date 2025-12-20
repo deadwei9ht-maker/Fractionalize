@@ -52,9 +52,8 @@ export function OwnedNfts({ onNftSelect, selectedNft }: OwnedNftsProps) {
       setNfts([]);
 
       try {
-        // Using a Goerli endpoint, as mainnet can be slow for demos
         const response = await fetch(
-          `https://eth-goerli.g.alchemy.com/nft/v2/${ALCHEMY_API_KEY}/getNFTs?owner=${address}&pageSize=100`
+          `https://eth-sepolia.g.alchemy.com/nft/v2/${ALCHEMY_API_KEY}/getNFTs?owner=${address}&pageSize=100`
         );
         if (!response.ok) {
           const errorData = await response.json();
@@ -123,7 +122,7 @@ export function OwnedNfts({ onNftSelect, selectedNft }: OwnedNftsProps) {
           <Info className="h-4 w-4" />
           <AlertTitle>No NFTs Found</AlertTitle>
           <AlertDescription>
-            We couldn't find any NFTs in your wallet on the Goerli test network.
+            We couldn't find any NFTs in your wallet on the Sepolia test network.
           </AlertDescription>
         </Alert>
       );
