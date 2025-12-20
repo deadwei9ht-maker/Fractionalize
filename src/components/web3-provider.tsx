@@ -6,12 +6,8 @@ import { mainnet, goerli } from 'wagmi/chains';
 import * as React from 'react';
 
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
-if (!projectId) {
-  console.warn("WalletConnect Project ID is not set. Wallet functionality will be disabled. Please set NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID in your environment variables.");
-}
 
-const chains = [mainnet, goerli];
-
+// Initialize wagmi config
 const wagmiConfig = createConfig({
   autoConnect: true,
   connectors: [],
@@ -19,7 +15,9 @@ const wagmiConfig = createConfig({
 
 
 // Only initialize Web3Modal if the project ID is available
-if (projectId) {
+if (!projectId) {
+  console.warn("WalletConnect Project ID is not set. Wallet functionality will be disabled. Please set NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID in your environment variables.");
+} else {
   const ethersConfig = defaultConfig({
     metadata: {
       name: 'NFT Fractionalizer',
@@ -29,10 +27,10 @@ if (projectId) {
     },
     defaultChainId: 5,
   });
-
+  
   createWeb3Modal({
     ethersConfig,
-    chains,
+    chains: [mainnet, goerli],
     projectId,
     enableAnalytics: true,
   });
