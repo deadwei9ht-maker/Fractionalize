@@ -30,7 +30,7 @@ export function UniswapDialog({ open, onOpenChange, onConfirm, tokenId }: Uniswa
             Create Liquidity Pool
           </DialogTitle>
           <DialogDescription>
-            You're about to create a new liquidity pool on the Goerli testnet for your tokens.
+            You're about to create a new liquidity pool on the Base Sepolia testnet for your tokens.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -58,5 +58,3 @@ export function UniswapDialog({ open, onOpenChange, onConfirm, tokenId }: Uniswa
     </Dialog>
   );
 }
-
-    

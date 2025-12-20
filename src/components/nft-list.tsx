@@ -38,7 +38,7 @@ const NFTListItem = ({ nft }: { nft: FractionalizedNft }) => {
       setLoading(true);
       try {
         const response = await fetch(
-          `https://eth-sepolia.g.alchemy.com/nft/v2/${ALCHEMY_API_KEY}/getNFTMetadata?contractAddress=${nft.nftContract}&tokenId=${nft.tokenId}`
+          `https://base-sepolia.g.alchemy.com/nft/v2/${ALCHEMY_API_KEY}/getNFTMetadata?contractAddress=${nft.nftContract}&tokenId=${nft.tokenId}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch metadata from Alchemy");
