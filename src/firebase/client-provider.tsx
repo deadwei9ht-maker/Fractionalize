@@ -2,14 +2,26 @@
 
 import { useMemo } from 'react';
 
-import { FirebaseProvider, type FirebaseProviderProps } from './provider';
+import { FirebaseProvider } from './provider';
 import { initializeFirebase } from '.';
+import { firebaseConfig } from './config';
 
-export function FirebaseClientProvider({ children }: { children: React.ReactNode }) {
-  const firebaseApp = useMemo(() => initializeFirebase(), []);
+export function FirebaseClientProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const firebaseApp = useMemo(
+    () => initializeFirebase(firebaseConfig),
+    []
+  );
 
   return (
-    <FirebaseProvider {...(firebaseApp as FirebaseProviderProps)}>
+    <FirebaseProvider
+      app={firebaseApp.app}
+      auth={firebaseApp.auth}
+      db={firebaseApp.db}
+    >
       {children}
     </FirebaseProvider>
   );

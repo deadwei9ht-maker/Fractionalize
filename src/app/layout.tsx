@@ -6,6 +6,7 @@ import { FirebaseProvider } from '@/firebase/provider';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { Web3Provider } from '@/components/web3-provider';
 import { Header } from '@/components/header';
+import { firebaseConfig } from '@/firebase/config';
 
 export const metadata: Metadata = {
   title: "Joshi's Share",
@@ -17,12 +18,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const walletConnectProjectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
+  const walletConnectProjectId =
+    process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
 
   if (!walletConnectProjectId) {
     // In a real app, you'd want to handle this more gracefully.
     // For this environment, we can throw to make it clear the variable is missing.
-    throw new Error("NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is not set in the environment.");
+    throw new Error(
+      'NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is not set in the environment.'
+    );
   }
 
   return (
@@ -41,7 +45,7 @@ export default function RootLayout({
       </head>
       <body className={cn('font-body antialiased')}>
         <Web3Provider projectId={walletConnectProjectId}>
-          <FirebaseProvider>
+          <FirebaseProvider firebaseConfig={firebaseConfig}>
             <Header />
             {children}
             <Toaster />

@@ -7,7 +7,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { type FirebaseApp } from 'firebase/app';
+import { type FirebaseApp, type FirebaseOptions } from 'firebase/app';
 import { type Auth } from 'firebase/auth';
 import { type Firestore } from 'firebase/firestore';
 
@@ -30,6 +30,7 @@ export interface FirebaseProviderProps {
   app?: FirebaseApp;
   auth?: Auth;
   db?: Firestore;
+  firebaseConfig?: FirebaseOptions;
 }
 
 export function FirebaseProvider({
@@ -41,13 +42,13 @@ export function FirebaseProvider({
   const [db, setDb] = useState<Firestore | null>(props.db ?? null);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && !app) {
-      const firebase = initializeFirebase();
+    if (typeof window !== 'undefined' && !app && props.firebaseConfig) {
+      const firebase = initializeFirebase(props.firebaseConfig);
       setApp(firebase.app);
       setAuth(firebase.auth);
       setDb(firebase.db);
     }
-  }, [app]);
+  }, [app, props.firebaseConfig]);
 
   const value = useMemo(
     () => ({
