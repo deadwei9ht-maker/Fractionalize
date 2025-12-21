@@ -1,5 +1,5 @@
 
-import { createWeb3Modal as createModal, defaultConfig } from '@web3modal/ethers5/react';
+import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5/react';
 import { createConfig, type WagmiConfig } from 'wagmi';
 import { baseSepolia } from 'wagmi/chains';
 
@@ -29,7 +29,7 @@ export function createWagmiConfig() {
 }
 
 export function initializeWeb3Modal(wagmiConfig: WagmiConfig) {
-    createModal({
+    createWeb3Modal({
         ethersConfig: wagmiConfig,
         chains,
         projectId,
