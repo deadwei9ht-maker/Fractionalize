@@ -6,47 +6,47 @@ import { WagmiConfig, createConfig, type WagmiConfig as WagmiConfigType } from '
 import { baseSepolia } from 'wagmi/chains';
 import * as React from 'react';
 
+// This is the correct, top-level, static configuration.
+// It will only be referenced on the client side.
+const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
+
+if (!projectId) {
+  throw new Error('NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is not set');
+}
+
+const metadata = {
+  name: "Joshi's Share",
+  description: 'Turn any NFT into 10,000 tradable shares in 1 click.',
+  url: 'https://app.firebase-studio.into-the-studio.dev/', // origin must match your domain & subdomain
+  icons: ['https://app.firebase-studio.into-the-studio.dev/favicon.ico'],
+};
+
+const chains = [baseSepolia];
+const wagmiConfig = createConfig(
+  defaultConfig({
+    chains,
+    metadata,
+    projectId,
+  })
+);
+
+createWeb3Modal({
+  ethersConfig: wagmiConfig,
+  chains,
+  projectId,
+  enableAnalytics: true, // Optional - defaults to your Cloud configuration
+});
+
 export function Web3Provider({ children }: { children: React.ReactNode }) {
-  const [config, setConfig] = React.useState<WagmiConfigType | null>(null);
+  const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
-    // This code will only run on the client side.
-    const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
-    if (!projectId) {
-      console.error('Error: NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is not set. Please check your .env.local file.');
-      return;
-    }
-
-    const metadata = {
-      name: "Joshi's Share",
-      description: 'Turn any NFT into 10,000 tradable shares in 1 click.',
-      url: 'https://app.firebase-studio.into-the-studio.dev/', // origin must match your domain & subdomain
-      icons: ['https://app.firebase-studio.into-the-studio.dev/favicon.ico'],
-    };
-
-    const chains = [baseSepolia];
-    const wagmiConfig = createConfig(
-      defaultConfig({
-        chains,
-        metadata,
-        projectId,
-      })
-    );
-
-    createWeb3Modal({
-      ethersConfig: wagmiConfig,
-      chains,
-      projectId,
-      enableAnalytics: true, // Optional - defaults to your Cloud configuration
-    });
-
-    setConfig(wagmiConfig);
+    setMounted(true);
   }, []);
 
-  if (!config) {
-    // Render nothing until the client-side configuration is ready.
-    return null;
+  if (!mounted) {
+    return null; // Render nothing on the server
   }
 
-  return <WagmiConfig config={config}>{children}</WagmiConfig>;
+  return <WagmiConfig config={wagmiConfig}>{children}</WagmiConfig>;
 }
