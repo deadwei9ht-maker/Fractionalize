@@ -17,6 +17,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const walletConnectProjectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
+
+  if (!walletConnectProjectId) {
+    // In a real app, you'd want to handle this more gracefully.
+    // For this environment, we can throw to make it clear the variable is missing.
+    throw new Error("NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is not set in the environment.");
+  }
+
   return (
     <html lang="en" className="dark">
       <head>
@@ -32,7 +40,7 @@ export default function RootLayout({
         />
       </head>
       <body className={cn('font-body antialiased')}>
-        <Web3Provider>
+        <Web3Provider projectId={walletConnectProjectId}>
           <FirebaseProvider>
             <Header />
             {children}
