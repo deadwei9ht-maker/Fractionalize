@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { Copy } from "lucide-react";
 import { ethers } from "ethers";
 import { useEthersProvider, useEthersSigner } from "@/hooks/use-ethers";
+import { useAccount } from "wagmi";
 
 import { cn } from "@/lib/utils";
 import { useUser } from "@/firebase/auth/use-user";
@@ -48,8 +49,15 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
   const { toast } = useToast();
   const { user } = useUser();
   const db = useFirestore();
-  const provider = useEthersProvider();
-  const signer = useEthersSigner();
+  const { isConnected } = useAccount();
+
+  // Conditionally call hooks to avoid errors when wallet is not connected
+  const provider = useEthersProvider({
+    chainId: isConnected ? undefined : 11155111, // Base Sepolia, but only if not connected
+  });
+  const signer = useEthersSigner({
+    chainId: isConnected ? undefined : 11155111,
+  });
 
   const [nftContract, setNftContract] = useState("");
   const [tokenId, setTokenId] = useState("");
