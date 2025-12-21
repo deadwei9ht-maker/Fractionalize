@@ -2,8 +2,6 @@ import { getApp, getApps, initializeApp, type FirebaseApp, type FirebaseOptions 
 import { getAuth, type Auth } from 'firebase/auth';
 import { getFirestore, type Firestore } from 'firebase/firestore';
 
-import { type firebaseConfig } from './config';
-
 export function initializeFirebase(config: FirebaseOptions): {
   app: FirebaseApp;
   auth: Auth;
@@ -25,7 +23,6 @@ export {
   useAuth,
   useFirestore,
   FirebaseProvider,
-  FirebaseClientProvider,
 };
 
 import {
@@ -38,4 +35,3 @@ import {
 import { useUser } from './auth/use-user';
 import { useCollection } from './firestore/use-collection';
 import { useDoc } from './firestore/use-doc';
-import { FirebaseClientProvider } from './client-provider';

@@ -44,14 +44,14 @@ export default function RootLayout({
         />
       </head>
       <body className={cn('font-body antialiased')}>
-        <Web3Provider projectId={walletConnectProjectId}>
-          <FirebaseProvider firebaseConfig={firebaseConfig}>
+        <FirebaseProvider firebaseConfig={firebaseConfig}>
+          <Web3Provider projectId={walletConnectProjectId}>
             <Header />
             {children}
             <Toaster />
             <FirebaseErrorListener />
-          </FirebaseProvider>
-        </Web3Provider>
+          </Web3Provider>
+        </FirebaseProvider>
       </body>
     </html>
   );

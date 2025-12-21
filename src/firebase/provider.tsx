@@ -27,28 +27,25 @@ export const FirebaseContext = createContext<FirebaseContextValue>({
 
 export interface FirebaseProviderProps {
   children: React.ReactNode;
-  app?: FirebaseApp;
-  auth?: Auth;
-  db?: Firestore;
-  firebaseConfig?: FirebaseOptions;
+  firebaseConfig: FirebaseOptions;
 }
 
 export function FirebaseProvider({
   children,
-  ...props
+  firebaseConfig
 }: FirebaseProviderProps) {
-  const [app, setApp] = useState<FirebaseApp | null>(props.app ?? null);
-  const [auth, setAuth] = useState<Auth | null>(props.auth ?? null);
-  const [db, setDb] = useState<Firestore | null>(props.db ?? null);
+  const [app, setApp] = useState<FirebaseApp | null>(null);
+  const [auth, setAuth] = useState<Auth | null>(null);
+  const [db, setDb] = useState<Firestore | null>(null);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && !app && props.firebaseConfig) {
-      const firebase = initializeFirebase(props.firebaseConfig);
+    if (typeof window !== 'undefined' && !app && firebaseConfig) {
+      const firebase = initializeFirebase(firebaseConfig);
       setApp(firebase.app);
       setAuth(firebase.auth);
       setDb(firebase.db);
     }
-  }, [app, props.firebaseConfig]);
+  }, [app, firebaseConfig]);
 
   const value = useMemo(
     () => ({
