@@ -1,43 +1,40 @@
 
 'use client';
 
-import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5/react';
-import { WagmiConfig, createConfig, type WagmiConfig as WagmiConfigType } from 'wagmi';
-import { baseSepolia } from 'wagmi/chains';
+import { WagmiConfig } from 'wagmi';
 import * as React from 'react';
 
-const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
-
-if (!projectId) {
-  throw new Error('NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is not set');
-}
-
-const metadata = {
-  name: "Joshi's Share",
-  description: 'Turn any NFT into 10,000 tradable shares in 1 click.',
-  url: 'https://app.firebase-studio.into-the-studio.dev/', // origin must match your domain & subdomain
-  icons: ['https://app.firebase-studio.into-the-studio.dev/favicon.ico'],
-};
-
-const chains = [baseSepolia];
-const wagmiConfig = createConfig(
-  defaultConfig({
-    chains,
-    metadata,
-    projectId,
-  })
-);
-
-createWeb3Modal({
-  ethersConfig: wagmiConfig,
-  chains,
-  projectId,
-  enableAnalytics: true, // Optional - defaults to your Cloud configuration
-});
+// This is the key change: We use a state to hold the config,
+// which will be populated only on the client side.
+let wagmiConfig: ReturnType<typeof import('@/lib/web3').createWagmiConfig> | null = null;
 
 export function Web3Provider({ children }: { children: React.ReactNode }) {
-  const [mounted, setMounted] = React.useState(false);
-  React.useEffect(() => setMounted(true), []);
+  const [initialized, setInitialized] = React.useState(false);
 
-  return <WagmiConfig config={wagmiConfig}>{mounted && children}</WagmiConfig>;
+  React.useEffect(() => {
+    // This effect runs only in the browser
+    async function init() {
+      // Dynamically import the configuration code.
+      // This ensures it's never bundled on the server.
+      const { createWagmiConfig, initializeWeb3Modal } = await import('@/lib/web3');
+      
+      // Create the config and modal
+      wagmiConfig = createWagmiConfig();
+      initializeWeb3Modal(wagmiConfig);
+      
+      // Mark as initialized to trigger a re-render
+      setInitialized(true);
+    }
+    
+    if (!initialized) {
+      init();
+    }
+  }, [initialized]);
+
+  // Render nothing until the client-side initialization is complete.
+  if (!initialized || !wagmiConfig) {
+    return null;
+  }
+
+  return <WagmiConfig config={wagmiConfig}>{children}</WagmiConfig>;
 }
