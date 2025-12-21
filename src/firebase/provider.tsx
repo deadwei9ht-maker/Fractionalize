@@ -7,11 +7,9 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { type FirebaseApp, type FirebaseOptions } from 'firebase/app';
-import { type Auth } from 'firebase/auth';
-import { type Firestore } from 'firebase/firestore';
-
-import { initializeFirebase } from '.';
+import { type FirebaseApp, type FirebaseOptions, getApps, getApp, initializeApp } from 'firebase/app';
+import { type Auth, getAuth } from 'firebase/auth';
+import { type Firestore, getFirestore } from 'firebase/firestore';
 
 export interface FirebaseContextValue {
   app: FirebaseApp | null;
@@ -39,11 +37,18 @@ export function FirebaseProvider({
   const [db, setDb] = useState<Firestore | null>(null);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && !app && firebaseConfig) {
-      const firebase = initializeFirebase(firebaseConfig);
-      setApp(firebase.app);
-      setAuth(firebase.auth);
-      setDb(firebase.db);
+    if (typeof window !== 'undefined' && !app && firebaseConfig?.apiKey) {
+      const existingApp = getApps().length ? getApp() : null;
+      if (existingApp) {
+        setApp(existingApp);
+        setAuth(getAuth(existingApp));
+        setDb(getFirestore(existingApp));
+      } else {
+        const newApp = initializeApp(firebaseConfig);
+        setApp(newApp);
+        setAuth(getAuth(newApp));
+        setDb(getFirestore(newApp));
+      }
     }
   }, [app, firebaseConfig]);
 
