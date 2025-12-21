@@ -6,8 +6,6 @@ import { WagmiConfig, createConfig, type WagmiConfig as WagmiConfigType } from '
 import { baseSepolia } from 'wagmi/chains';
 import * as React from 'react';
 
-// This is the correct, top-level, static configuration.
-// It will only be referenced on the client side.
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
 
 if (!projectId) {
@@ -39,14 +37,7 @@ createWeb3Modal({
 
 export function Web3Provider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
 
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return null; // Render nothing on the server
-  }
-
-  return <WagmiConfig config={wagmiConfig}>{children}</WagmiConfig>;
+  return <WagmiConfig config={wagmiConfig}>{mounted && children}</WagmiConfig>;
 }
