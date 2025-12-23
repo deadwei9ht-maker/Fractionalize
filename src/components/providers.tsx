@@ -17,6 +17,9 @@ interface ProvidersProps {
   firebaseConfig: FirebaseOptions;
 }
 
+// All configuration is now happening inside the component to ensure it only runs
+// on the client side after the component mounts.
+
 export function Providers({
   children,
   firebaseConfig,
@@ -24,76 +27,54 @@ export function Providers({
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    const walletConnectProjectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
-    if (walletConnectProjectId) {
-      const metadata = {
-        name: "Joshi's Share",
-        description: 'Turn any NFT into 10,000 tradable shares in 1 click.',
-        url: 'https://app.firebase-studio.into-the-studio.dev/',
-        icons: ['https://app.firebase-studio.into-the-studio.dev/favicon.ico'],
-      };
-
-      const chains = [baseSepolia];
-      const wagmiConfig = createConfig(
-        defaultConfig({
-          chains,
-          metadata,
-          projectId: walletConnectProjectId,
-          enableCoinbase: true,
-          defaultChainId: baseSepolia.id,
-        })
-      );
-
-      createWeb3Modal({
-        ethersConfig: wagmiConfig,
-        chains,
-        projectId: walletConnectProjectId,
-        enableAnalytics: true,
-      });
-      
-      setInitialized(true);
+    // 1. Get projectID
+    const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
+    if (!projectId) {
+      // This error is now safely thrown only on the client side.
+      throw new Error('NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is not set');
     }
-  }, []);
 
-  const renderContent = () => {
-    if (!initialized) {
-      // You can return a loader here if you want.
-      // Returning null for now to avoid rendering anything before initialization.
-      return null;
-    }
-    
-    // WagmiConfig must be defined here, inside the client-only effect
-    // We can't use the one from the outer scope as it would be created on the server
-    const walletConnectProjectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!;
+    // 2. Create wagmiConfig
     const metadata = {
       name: "Joshi's Share",
       description: 'Turn any NFT into 10,000 tradable shares in 1 click.',
       url: 'https://app.firebase-studio.into-the-studio.dev/',
       icons: ['https://app.firebase-studio.into-the-studio.dev/favicon.ico'],
     };
+
     const chains = [baseSepolia];
     const wagmiConfig = createConfig(
       defaultConfig({
         chains,
         metadata,
-        projectId: walletConnectProjectId,
+        projectId,
         enableCoinbase: true,
         defaultChainId: baseSepolia.id,
       })
     );
 
+    // 3. Create modal
+    createWeb3Modal({
+      ethersConfig: wagmiConfig,
+      chains,
+      projectId,
+      enableAnalytics: true,
+    });
+    
+    setInitialized(true);
+  }, []);
 
-    return (
-      <WagmiConfig config={wagmiConfig}>
-        <FirebaseProvider firebaseConfig={firebaseConfig}>
-          <Header />
-          {children}
-          <Toaster />
-          <FirebaseErrorListener />
-        </FirebaseProvider>
-      </WagmiConfig>
-    );
-  };
+  // Render nothing until all client-side initializations are complete.
+  if (!initialized) {
+    return null;
+  }
 
-  return <>{renderContent()}</>;
+  return (
+      <FirebaseProvider firebaseConfig={firebaseConfig}>
+        <Header />
+        {children}
+        <Toaster />
+        <FirebaseErrorListener />
+      </FirebaseProvider>
+  );
 }
