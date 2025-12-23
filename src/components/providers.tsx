@@ -9,7 +9,7 @@ import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { useEffect, useState } from 'react';
 
 import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5/react';
-import { WagmiConfig, createConfig } from 'wagmi';
+import { WagmiConfig, createConfig, type State } from 'wagmi';
 import { baseSepolia } from 'wagmi/chains';
 
 interface ProvidersProps {
@@ -25,13 +25,15 @@ export function Providers({
   firebaseConfig,
 }: ProvidersProps) {
   const [initialized, setInitialized] = useState(false);
+  const [wagmiConfig, setWagmiConfig] = useState<State | undefined>(undefined);
 
   useEffect(() => {
     // 1. Get projectID
     const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
     if (!projectId) {
       // This error is now safely thrown only on the client side.
-      throw new Error('NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is not set');
+      console.error('NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is not set');
+      return;
     }
 
     // 2. Create wagmiConfig
@@ -43,7 +45,7 @@ export function Providers({
     };
 
     const chains = [baseSepolia];
-    const wagmiConfig = createConfig(
+    const config = createConfig(
       defaultConfig({
         chains,
         metadata,
@@ -52,10 +54,11 @@ export function Providers({
         defaultChainId: baseSepolia.id,
       })
     );
+    setWagmiConfig(config);
 
     // 3. Create modal
     createWeb3Modal({
-      ethersConfig: wagmiConfig,
+      ethersConfig: config,
       chains,
       projectId,
       enableAnalytics: true,
@@ -65,16 +68,18 @@ export function Providers({
   }, []);
 
   // Render nothing until all client-side initializations are complete.
-  if (!initialized) {
+  if (!initialized || !wagmiConfig) {
     return null;
   }
 
   return (
+    <WagmiConfig config={wagmiConfig}>
       <FirebaseProvider firebaseConfig={firebaseConfig}>
         <Header />
         {children}
         <Toaster />
         <FirebaseErrorListener />
       </FirebaseProvider>
+    </WagmiConfig>
   );
 }
