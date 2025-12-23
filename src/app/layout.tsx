@@ -21,8 +21,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const firebaseConfig = getFirebaseConfig();
-  const walletConnectProjectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!;
-
 
   return (
     <html lang="en" className="dark">
@@ -40,8 +38,7 @@ export default function RootLayout({
       </head>
       <body className={cn('font-body antialiased')}>
         <Providers 
-          firebaseConfig={firebaseConfig} 
-          walletConnectProjectId={walletConnectProjectId}
+          firebaseConfig={firebaseConfig}
         >
           {children}
         </Providers>

@@ -15,17 +15,16 @@ import { baseSepolia } from 'wagmi/chains';
 interface ProvidersProps {
   children: React.ReactNode;
   firebaseConfig: FirebaseOptions;
-  walletConnectProjectId: string;
 }
 
 export function Providers({
   children,
   firebaseConfig,
-  walletConnectProjectId,
 }: ProvidersProps) {
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
+    const walletConnectProjectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
     if (walletConnectProjectId) {
       const metadata = {
         name: "Joshi's Share",
@@ -54,29 +53,47 @@ export function Providers({
       
       setInitialized(true);
     }
-  }, [walletConnectProjectId]);
+  }, []);
 
-  // WagmiConfig needs to be created before it's used.
-  // We create a dummy one for the initial render.
-  const dummyConfig = createConfig(defaultConfig({
-    chains: [baseSepolia],
-    projectId: '1',
-    metadata: { name: '', description: '', url: '', icons: [''] }
-  }));
+  const renderContent = () => {
+    if (!initialized) {
+      // You can return a loader here if you want.
+      // Returning null for now to avoid rendering anything before initialization.
+      return null;
+    }
+    
+    // WagmiConfig must be defined here, inside the client-only effect
+    // We can't use the one from the outer scope as it would be created on the server
+    const walletConnectProjectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!;
+    const metadata = {
+      name: "Joshi's Share",
+      description: 'Turn any NFT into 10,000 tradable shares in 1 click.',
+      url: 'https://app.firebase-studio.into-the-studio.dev/',
+      icons: ['https://app.firebase-studio.into-the-studio.dev/favicon.ico'],
+    };
+    const chains = [baseSepolia];
+    const wagmiConfig = createConfig(
+      defaultConfig({
+        chains,
+        metadata,
+        projectId: walletConnectProjectId,
+        enableCoinbase: true,
+        defaultChainId: baseSepolia.id,
+      })
+    );
 
 
-  return (
-    <WagmiConfig config={initialized ? (undefined as any) : dummyConfig}>
-      <FirebaseProvider firebaseConfig={firebaseConfig}>
-        {initialized ? (
-          <>
-            <Header />
-            {children}
-            <Toaster />
-            <FirebaseErrorListener />
-          </>
-        ) : null}
-      </FirebaseProvider>
-    </WagmiConfig>
-  );
+    return (
+      <WagmiConfig config={wagmiConfig}>
+        <FirebaseProvider firebaseConfig={firebaseConfig}>
+          <Header />
+          {children}
+          <Toaster />
+          <FirebaseErrorListener />
+        </FirebaseProvider>
+      </WagmiConfig>
+    );
+  };
+
+  return <>{renderContent()}</>;
 }
