@@ -20,17 +20,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const walletConnectProjectId =
-    process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
+    process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!;
 
   // Get the fully resolved config on the server
   const firebaseConfig = getFirebaseConfig();
-
-  // Ensure config is valid before rendering providers that depend on it
-  const isConfigValid =
-    walletConnectProjectId &&
-    firebaseConfig.apiKey &&
-    firebaseConfig.authDomain &&
-    firebaseConfig.projectId;
 
   return (
     <html lang="en" className="dark">
@@ -47,20 +40,14 @@ export default function RootLayout({
         />
       </head>
       <body className={cn('font-body antialiased')}>
-        {isConfigValid ? (
-          <FirebaseProvider firebaseConfig={firebaseConfig}>
-            <Web3Provider projectId={walletConnectProjectId}>
-              <Header />
-              {children}
-              <Toaster />
-              <FirebaseErrorListener />
-            </Web3Provider>
-          </FirebaseProvider>
-        ) : (
-          <div className="flex h-screen w-full items-center justify-center bg-background">
-            <p className="text-foreground">Configuration is missing. The application cannot start.</p>
-          </div>
-        )}
+        <FirebaseProvider firebaseConfig={firebaseConfig}>
+          <Web3Provider projectId={walletConnectProjectId}>
+            <Header />
+            {children}
+            <Toaster />
+            <FirebaseErrorListener />
+          </Web3Provider>
+        </FirebaseProvider>
       </body>
     </html>
   );
