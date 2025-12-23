@@ -3,9 +3,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
-import { FirebaseProvider } from '@/firebase/provider';
+import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
-import { Web3Provider } from '@/components/web3-provider';
 import { Header } from '@/components/header';
 import { getFirebaseConfig } from '@/firebase/config';
 
@@ -21,8 +20,6 @@ export default function RootLayout({
 }>) {
   const walletConnectProjectId =
     process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!;
-
-  // Get the fully resolved config on the server
   const firebaseConfig = getFirebaseConfig();
 
   return (
@@ -40,14 +37,15 @@ export default function RootLayout({
         />
       </head>
       <body className={cn('font-body antialiased')}>
-        <FirebaseProvider firebaseConfig={firebaseConfig}>
-          <Web3Provider projectId={walletConnectProjectId}>
-            <Header />
-            {children}
-            <Toaster />
-            <FirebaseErrorListener />
-          </Web3Provider>
-        </FirebaseProvider>
+        <FirebaseClientProvider
+          firebaseConfig={firebaseConfig}
+          walletConnectProjectId={walletConnectProjectId}
+        >
+          <Header />
+          {children}
+          <Toaster />
+          <FirebaseErrorListener />
+        </FirebaseClientProvider>
       </body>
     </html>
   );

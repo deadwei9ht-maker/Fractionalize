@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -37,20 +38,14 @@ export function FirebaseProvider({
   const [db, setDb] = useState<Firestore | null>(null);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && !app && firebaseConfig?.apiKey) {
-      const existingApp = getApps().length ? getApp() : null;
-      if (existingApp) {
-        setApp(existingApp);
-        setAuth(getAuth(existingApp));
-        setDb(getFirestore(existingApp));
-      } else {
-        const newApp = initializeApp(firebaseConfig);
-        setApp(newApp);
-        setAuth(getAuth(newApp));
-        setDb(getFirestore(newApp));
-      }
+    // This effect ensures Firebase is initialized only on the client side.
+    if (firebaseConfig?.apiKey) {
+      const initializedApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
+      setApp(initializedApp);
+      setAuth(getAuth(initializedApp));
+      setDb(getFirestore(initializedApp));
     }
-  }, [app, firebaseConfig]);
+  }, [firebaseConfig]);
 
   const value = useMemo(
     () => ({
@@ -69,7 +64,11 @@ export function FirebaseProvider({
 }
 
 export function useFirebase() {
-  return useContext(FirebaseContext);
+  const context = useContext(FirebaseContext);
+  if (!context) {
+    throw new Error('useFirebase must be used within a FirebaseProvider');
+  }
+  return context;
 }
 
 export function useFirebaseApp() {
