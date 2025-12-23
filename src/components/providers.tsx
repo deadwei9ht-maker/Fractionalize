@@ -17,8 +17,13 @@ interface ProvidersProps {
   firebaseConfig: FirebaseOptions;
 }
 
-// All configuration is now happening inside the component to ensure it only runs
-// on the client side after the component mounts.
+const chains = [baseSepolia];
+const metadata = {
+  name: "Joshi's Share",
+  description: 'Turn any NFT into 10,000 tradable shares in 1 click.',
+  url: 'https://app.firebase-studio.into-the-studio.dev/',
+  icons: ['https://app.firebase-studio.into-the-studio.dev/favicon.ico'],
+};
 
 export function Providers({
   children,
@@ -31,20 +36,10 @@ export function Providers({
     // 1. Get projectID
     const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
     if (!projectId) {
-      // This error is now safely thrown only on the client side.
-      console.error('NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is not set');
-      return;
+      throw new Error('NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is not set');
     }
 
     // 2. Create wagmiConfig
-    const metadata = {
-      name: "Joshi's Share",
-      description: 'Turn any NFT into 10,000 tradable shares in 1 click.',
-      url: 'https://app.firebase-studio.into-the-studio.dev/',
-      icons: ['https://app.firebase-studio.into-the-studio.dev/favicon.ico'],
-    };
-
-    const chains = [baseSepolia];
     const config = createConfig(
       defaultConfig({
         chains,
@@ -55,7 +50,7 @@ export function Providers({
       })
     );
     setWagmiConfig(config);
-
+    
     // 3. Create modal
     createWeb3Modal({
       ethersConfig: config,
