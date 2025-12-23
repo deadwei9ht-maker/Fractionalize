@@ -26,21 +26,23 @@ const metadata = {
 
 const chains = [baseSepolia];
 
-// We have to create the config outside the component.
+// We create the config outside of the component to avoid re-creation on every render.
 const wagmiConfig = createConfig(
   defaultConfig({
     chains,
     metadata,
-    // projectId is a required argument for defaultConfig, but we will pass it to createWeb3Modal
-    // We use a placeholder here to satisfy the type.
-    projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'dummy-id',
+    // This dummy ID is required by the function signature but is not used.
+    // The actual projectId from props is passed to createWeb3Modal.
+    projectId: 'dummy-id',
   })
 );
 
 export function Web3Provider({ children, projectId }: Web3ProviderProps) {
   const [initialized, setInitialized] = React.useState(false);
-  
+
   React.useEffect(() => {
+    // createWeb3Modal must be called on the client side.
+    // We use useEffect to ensure this.
     if (projectId) {
       createWeb3Modal({
         ethersConfig: wagmiConfig,
@@ -52,5 +54,6 @@ export function Web3Provider({ children, projectId }: Web3ProviderProps) {
     }
   }, [projectId]);
 
+  // We render the children only after the modal has been initialized.
   return <WagmiConfig config={wagmiConfig}>{initialized ? children : null}</WagmiConfig>;
 }
