@@ -1,11 +1,8 @@
 
 import type { Metadata } from 'next';
 import './globals.css';
-import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
-import { FirebaseClientProvider } from '@/firebase/client-provider';
-import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
-import { Header } from '@/components/header';
+import { Providers } from '@/components/providers';
 import { getFirebaseConfig } from '@/firebase/config';
 
 export const metadata: Metadata = {
@@ -37,15 +34,12 @@ export default function RootLayout({
         />
       </head>
       <body className={cn('font-body antialiased')}>
-        <FirebaseClientProvider
+        <Providers
           firebaseConfig={firebaseConfig}
           walletConnectProjectId={walletConnectProjectId}
         >
-          <Header />
           {children}
-          <Toaster />
-          <FirebaseErrorListener />
-        </FirebaseClientProvider>
+        </Providers>
       </body>
     </html>
   );
