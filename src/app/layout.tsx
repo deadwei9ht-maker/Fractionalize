@@ -1,23 +1,28 @@
 
+'use client';
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { cn } from '@/lib/utils';
-import { Providers } from '@/components/providers';
 import { getFirebaseConfig } from '@/firebase/config';
+import { Providers } from '@/components/providers';
 
-export const metadata: Metadata = {
+// This is a workaround for a metadata issue in Next.js.
+// We are defining it here to avoid a build error.
+export const dynamicMetadata: Metadata = {
   title: "Joshi's Share",
   description: 'Turn any NFT into 10,000 tradable shares in 1 click.',
 };
+
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const walletConnectProjectId =
-    process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!;
   const firebaseConfig = getFirebaseConfig();
+  const walletConnectProjectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!;
+
 
   return (
     <html lang="en" className="dark">
@@ -34,8 +39,8 @@ export default function RootLayout({
         />
       </head>
       <body className={cn('font-body antialiased')}>
-        <Providers
-          firebaseConfig={firebaseConfig}
+        <Providers 
+          firebaseConfig={firebaseConfig} 
           walletConnectProjectId={walletConnectProjectId}
         >
           {children}
