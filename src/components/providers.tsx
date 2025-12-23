@@ -30,16 +30,18 @@ export function Providers({
   firebaseConfig,
 }: ProvidersProps) {
   const [initialized, setInitialized] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [wagmiConfig, setWagmiConfig] = useState<State | undefined>(undefined);
 
   useEffect(() => {
-    // 1. Get projectID
     const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
+
     if (!projectId) {
-      throw new Error('NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is not set');
+      console.error('NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is not set. Please set it in your environment.');
+      setError('NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is not set. Please add it to your environment variables to enable wallet connections.');
+      return;
     }
 
-    // 2. Create wagmiConfig
     const config = createConfig(
       defaultConfig({
         chains,
@@ -51,7 +53,6 @@ export function Providers({
     );
     setWagmiConfig(config);
     
-    // 3. Create modal
     createWeb3Modal({
       ethersConfig: config,
       chains,
@@ -62,9 +63,19 @@ export function Providers({
     setInitialized(true);
   }, []);
 
-  // Render nothing until all client-side initializations are complete.
+  if (error) {
+    return (
+      <div className="flex h-screen w-screen flex-col items-center justify-center bg-background text-foreground">
+        <div className="rounded-lg border border-destructive bg-card p-8 text-center shadow-lg">
+          <h1 className="mb-4 text-2xl font-bold text-destructive-foreground">Configuration Error</h1>
+          <p className="max-w-md text-muted-foreground">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!initialized || !wagmiConfig) {
-    return null;
+    return null; // Render nothing until initialization is complete and successful
   }
 
   return (
