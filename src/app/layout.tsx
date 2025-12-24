@@ -34,12 +34,19 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className={cn('font-body antialiased')}>
+      <body className={cn('font-body antialiased flex flex-col min-h-screen')}>
         <Providers 
           firebaseConfig={firebaseConfig}
         >
-          {children}
+          <div className="flex-grow">
+            {children}
+          </div>
         </Providers>
+        <footer className="w-full p-4 text-center">
+          <p className="text-xs text-muted-foreground">
+            Brought To You By &quot;The House Of Joshi&quot;
+          </p>
+        </footer>
       </body>
     </html>
   );

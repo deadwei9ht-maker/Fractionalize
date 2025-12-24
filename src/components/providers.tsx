@@ -61,6 +61,7 @@ export function Providers({
     });
     
     setInitialized(true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (error) {
