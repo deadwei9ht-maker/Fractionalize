@@ -3,3 +3,5 @@
 import './flows/generate-art-flow';
 import './flows/generate-asset-art-flow';
 import './flows/alice-flow';
+import './flows/verify-documents-flow';
+

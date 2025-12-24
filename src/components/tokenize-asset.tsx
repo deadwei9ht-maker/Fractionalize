@@ -11,16 +11,29 @@ import {
 } from './ui/card';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
-import { Landmark, Upload } from 'lucide-react';
+import { Landmark, Upload, ShieldCheck, ShieldAlert } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { verifyDocuments } from '@/ai/flows/verify-documents-flow';
 
 export function TokenizeAsset() {
   const [assetDescription, setAssetDescription] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState('Initiating Tokenization...');
   const [ownershipFile, setOwnershipFile] = useState<File | null>(null);
+  const [identityFile, setIdentityFile] = useState<File | null>(null);
   
   const ownershipInputRef = useRef<HTMLInputElement>(null);
+  const identityInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  const fileToDataUri = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
 
   const handleOwnershipFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -28,26 +41,63 @@ export function TokenizeAsset() {
       setOwnershipFile(file);
     }
   };
+  
+  const handleIdentityFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setIdentityFile(file);
+    }
+  };
 
-  const handleFractionalize = () => {
-     if (!assetDescription.trim() || !ownershipFile) {
+  const handleFractionalize = async () => {
+     if (!assetDescription.trim() || !ownershipFile || !identityFile) {
         toast({
             variant: 'destructive',
             title: 'Missing Information',
-            description: 'Please provide the asset description and proof of ownership.',
+            description: 'Please provide the asset description, proof of ownership, and identity document.',
         });
         return;
     }
-    // This would be where we hook into the fractionalization contract
-    // and upload files to a secure storage. For now, it's a placeholder.
+    
     setLoading(true);
-    setTimeout(() => {
-        setLoading(false);
+    setLoadingMessage('Verifying documents with AI...');
+
+    try {
+      const ownershipDataUri = await fileToDataUri(ownershipFile);
+      const identityDataUri = await fileToDataUri(identityFile);
+
+      const verificationResult = await verifyDocuments({
+        assetDescription,
+        ownershipProofDataUri: ownershipDataUri,
+        identityDataUri: identityDataUri,
+      });
+
+      if (!verificationResult.verified) {
+        throw new Error(verificationResult.reason || 'AI verification failed.');
+      }
+      
+      setLoadingMessage('Verification successful. Tokenizing...');
+      // This would be where we hook into the fractionalization contract
+      // and upload files to a secure storage. For now, it's a placeholder.
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      toast({
+        title: 'Asset Tokenized! (Simulated)',
+        description: 'Your real-world asset is now fractionalized on the testnet.',
+        action: <div className="p-2 rounded-full bg-green-500/20"><ShieldCheck className="h-5 w-5 text-green-500" /></div>,
+      });
+
+    } catch (error: any) {
+        console.error('Verification or tokenization error:', error);
         toast({
-            title: 'Fractionalization Initiated (Simulated)',
-            description: 'Your real-world asset is being tokenized on the testnet.',
+            variant: 'destructive',
+            title: 'Verification Failed',
+            description: error.message,
+            action: <div className="p-2 rounded-full bg-destructive/20"><ShieldAlert className="h-5 w-5 text-destructive-foreground" /></div>,
         });
-    }, 2000);
+    } finally {
+        setLoading(false);
+    }
   };
 
   return (
@@ -57,7 +107,7 @@ export function TokenizeAsset() {
           Tokenize a Real-World Asset
         </CardTitle>
         <CardDescription className="pt-2 text-white/80">
-          Provide a description and proof of ownership for an asset to tokenize it into tradable shares.
+          Provide documents for an asset to tokenize it into tradable shares, verified by AI.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4 p-4 md:p-6 pt-0">
@@ -87,20 +137,37 @@ export function TokenizeAsset() {
             {ownershipFile ? `Selected: ${ownershipFile.name}` : 'Upload Proof of Ownership'}
         </Button>
         
+        <input
+          type="file"
+          ref={identityInputRef}
+          onChange={handleIdentityFileChange}
+          className="hidden"
+          accept="image/*"
+        />
+        <Button 
+            variant="outline"
+            onClick={() => identityInputRef.current?.click()}
+            disabled={loading}
+            className="w-full justify-center h-10 md:h-12"
+        >
+            <Upload className="mr-2" />
+            {identityFile ? `Selected: ${identityFile.name}` : 'Upload Identity Document'}
+        </Button>
+        
         <Button
           onClick={handleFractionalize}
-          disabled={loading || !ownershipFile || !assetDescription}
+          disabled={loading || !ownershipFile || !identityFile || !assetDescription}
           className="h-12 w-full rounded-lg bg-gradient-to-r from-accent to-primary text-lg font-bold text-primary-foreground transition-transform duration-300 hover:scale-[1.03]"
         >
           {loading ? (
             <div className="flex items-center gap-2">
               <div className="w-5 h-5 border-2 border-primary-foreground/50 border-t-primary-foreground rounded-full animate-spin" />
-              <span>Initiating Tokenization...</span>
+              <span>{loadingMessage}</span>
             </div>
           ) : (
             <>
               <Landmark className="mr-2" />
-              Tokenize this Asset
+              Verify & Tokenize Asset
             </>
           )}
         </Button>
