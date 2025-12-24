@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TokenizeArt } from '@/components/tokenize-art';
 import { TokenizeAsset } from '@/components/tokenize-asset';
 import { ImageIcon, LinkIcon, Landmark as LandmarkIcon } from 'lucide-react';
+import { AskAlice } from '@/components/ask-alice';
 
 export default function HomePage() {
   const [selectedNft, setSelectedNft] = useState<OwnedNft | null>(null);
@@ -64,6 +65,9 @@ export default function HomePage() {
         </div>
         <Separator orientation="vertical" className="hidden h-auto lg:block" />
         <div className="flex w-full flex-col gap-8 lg:max-w-none lg:flex-1">
+          <div className="flex justify-end">
+            <AskAlice />
+          </div>
           <OwnedNfts onNftSelect={setSelectedNft} selectedNft={selectedNft} />
           <NFTList />
         </div>
