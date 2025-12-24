@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef } from 'react';
@@ -10,18 +11,15 @@ import {
 } from './ui/card';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
-import { Landmark, Upload, UserCheck } from 'lucide-react';
+import { Landmark, Upload } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 
 export function TokenizeAsset() {
   const [assetDescription, setAssetDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [ownershipFile, setOwnershipFile] = useState<File | null>(null);
-  const [identityFile, setIdentityFile] = useState<File | null>(null);
   
   const ownershipInputRef = useRef<HTMLInputElement>(null);
-  const identityInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const handleOwnershipFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,19 +29,12 @@ export function TokenizeAsset() {
     }
   };
 
-  const handleIdentityFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setIdentityFile(file);
-    }
-  };
-
   const handleFractionalize = () => {
-     if (!assetDescription.trim() || !ownershipFile || !identityFile) {
+     if (!assetDescription.trim() || !ownershipFile) {
         toast({
             variant: 'destructive',
             title: 'Missing Information',
-            description: 'Please provide the asset description, proof of ownership, and proof of identity.',
+            description: 'Please provide the asset description and proof of ownership.',
         });
         return;
     }
@@ -66,18 +57,10 @@ export function TokenizeAsset() {
           Tokenize a Real-World Asset
         </CardTitle>
         <CardDescription className="pt-2 text-white/80">
-          Upload proof of ownership for a real-world asset to tokenize it into tradable shares.
+          Provide a description and proof of ownership for an asset to tokenize it into tradable shares.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <Alert>
-          <UserCheck className="h-4 w-4" />
-          <AlertTitle>Verification Required</AlertTitle>
-          <AlertDescription>
-            Document uploads are for simulation purposes. In a real application, these would be securely verified.
-          </AlertDescription>
-        </Alert>
-
         <Input
           id="asset-description"
           placeholder="Asset Description (e.g., 2023 Sports Car, Rolex Watch...)"
@@ -101,29 +84,12 @@ export function TokenizeAsset() {
             className="w-full justify-center"
         >
             <Upload className="mr-2" />
-            {ownershipFile ? `Ownership: ${ownershipFile.name}` : 'Upload Proof of Ownership'}
-        </Button>
-
-        <input
-          type="file"
-          ref={identityInputRef}
-          onChange={handleIdentityFileChange}
-          className="hidden"
-          accept=".pdf,image/*"
-        />
-        <Button 
-            variant="outline"
-            onClick={() => identityInputRef.current?.click()}
-            disabled={loading}
-            className="w-full justify-center"
-        >
-            <Upload className="mr-2" />
-            {identityFile ? `ID: ${identityFile.name}` : 'Upload Proof of Identity'}
+            {ownershipFile ? `Selected: ${ownershipFile.name}` : 'Upload Proof of Ownership'}
         </Button>
         
         <Button
           onClick={handleFractionalize}
-          disabled={loading || !ownershipFile || !identityFile || !assetDescription}
+          disabled={loading || !ownershipFile || !assetDescription}
           className="h-12 w-full rounded-lg bg-gradient-to-r from-accent to-primary text-lg font-bold text-primary-foreground transition-transform duration-300 hover:scale-[1.03]"
         >
           {loading ? (
