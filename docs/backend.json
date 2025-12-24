@@ -74,6 +74,39 @@
         }
       },
       "required": ["userId", "prompt", "imageUrl", "tokenId", "createdAt"]
+    },
+    "RealEstate": {
+      "title": "Real Estate",
+      "description": "Represents a real estate asset that has been fractionalized.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "The ID of the user who owns the asset."
+        },
+        "address": {
+          "type": "string",
+          "description": "The physical address of the real estate property."
+        },
+        "deedUrl": {
+          "type": "string",
+          "description": "URL to the uploaded deed document in Firebase Storage."
+        },
+        "identityUrl": {
+          "type": "string",
+          "description": "URL to the uploaded identity document in Firebase Storage."
+        },
+        "tokenId": {
+          "type": "string",
+          "description": "The new token ID for the fractionalized shares."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the asset was fractionalized."
+        }
+      },
+      "required": ["userId", "address", "deedUrl", "identityUrl", "tokenId", "createdAt"]
     }
   },
   "auth": {
@@ -97,6 +130,12 @@
         "$ref": "#/backend/entities/AiNft"
       },
       "description": "Stores information about fractionalized AI-generated art."
+    },
+    "/realEstate/{propertyId}": {
+      "schema": {
+        "$ref": "#/backend/entities/RealEstate"
+      },
+      "description": "Stores information about fractionalized real estate properties."
     }
   }
 }

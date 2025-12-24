@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -12,9 +11,9 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TokenizeArt } from '@/components/tokenize-art';
 import { TokenizeAsset } from '@/components/tokenize-asset';
-import { ImageIcon, LinkIcon, Package } from 'lucide-react';
+import { ImageIcon, LinkIcon, Home as HomeIcon } from 'lucide-react';
 
-export default function Home() {
+export default function HomePage() {
   const [selectedNft, setSelectedNft] = useState<OwnedNft | null>(null);
   const { isConnected } = useAccount();
 
@@ -34,8 +33,8 @@ export default function Home() {
                   From AI
                 </TabsTrigger>
                 <TabsTrigger value="from-asset">
-                  <Package className="mr-2" />
-                  Real-World Asset
+                  <HomeIcon className="mr-2" />
+                  Real Estate
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="from-wallet">
