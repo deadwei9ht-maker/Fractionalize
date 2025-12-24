@@ -11,7 +11,7 @@ import {
 } from './ui/card';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
-import { Landmark, Upload, ShieldCheck, ShieldAlert } from 'lucide-react';
+import { Landmark, Upload, ShieldCheck, ShieldAlert, TriangleAlert } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { verifyDocuments } from '@/ai/flows/verify-documents-flow';
 import { useUser } from '@/firebase/auth/use-user';
@@ -20,6 +20,7 @@ import { uploadFile } from '@/lib/storage-actions';
 import { saveRealWorldAsset } from '@/lib/firestore-actions';
 import { getStorage } from 'firebase/storage';
 import { useFirebaseApp } from '@/firebase/provider';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 
 export function TokenizeAsset() {
   const [assetDescription, setAssetDescription] = useState('');
@@ -141,6 +142,13 @@ export function TokenizeAsset() {
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4 p-4 md:p-6 pt-0">
+        <Alert variant="destructive" className="border-primary/50 text-primary-foreground bg-primary/10">
+          <TriangleAlert className="h-4 w-4 text-primary" />
+          <AlertTitle className="text-primary">Live Testnet Feature</AlertTitle>
+          <AlertDescription className="text-primary/80">
+            While this feature is exploratory, proceeding will execute a real smart contract transaction on the testnet. This action is irreversible and will incur gas fees.
+          </AlertDescription>
+        </Alert>
         <Input
           id="asset-description"
           placeholder="Asset Description (e.g., 2023 Sports Car, Rolex Watch...)"
@@ -205,3 +213,5 @@ export function TokenizeAsset() {
     </Card>
   );
 }
+
+    
