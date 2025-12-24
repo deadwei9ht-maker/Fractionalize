@@ -16,11 +16,13 @@ import { useToast } from '@/hooks/use-toast';
 import { generateArt } from '@/ai/flows/generate-art-flow';
 import Image from 'next/image';
 import { Skeleton } from './ui/skeleton';
+import { Badge } from './ui/badge';
 
 export function TokenizeArt() {
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [joshiShareId, setJoshiShareId] = useState<string | null>(null);
   const { toast } = useToast();
 
   const handleGenerate = async () => {
@@ -34,16 +36,18 @@ export function TokenizeArt() {
     }
     setLoading(true);
     setGeneratedImage(null);
+    setJoshiShareId(null);
     try {
       const result = await generateArt({ prompt });
-      if (result.imageUrl) {
+      if (result.imageUrl && result.joshiShareId) {
         setGeneratedImage(result.imageUrl);
+        setJoshiShareId(result.joshiShareId);
         toast({
           title: 'Art Generated!',
           description: 'Your new masterpiece is ready.',
         });
       } else {
-        throw new Error('Image generation failed to return a URL.');
+        throw new Error('Image generation failed to return a URL or ID.');
       }
     } catch (error: any) {
       console.error('Error generating art:', error);
@@ -62,7 +66,7 @@ export function TokenizeArt() {
     // For now, it's a placeholder.
     toast({
       title: 'Fractionalization Initiated (Simulated)',
-      description: 'Your AI-generated art is being tokenized on the testnet.',
+      description: `Your AI-generated art (${joshiShareId}) is being tokenized.`,
     });
   };
 
@@ -121,6 +125,11 @@ export function TokenizeArt() {
                 />
               )}
             </div>
+             {joshiShareId && !loading && (
+               <div className="flex flex-col gap-2 w-full items-center">
+                  <Badge variant="secondary" className="font-mono">{joshiShareId}</Badge>
+               </div>
+            )}
             {generatedImage && !loading && (
               <Button onClick={handleFractionalize} className="w-full h-10">
                 <ImageIcon className="mr-2" />
