@@ -1,3 +1,4 @@
+
 rules_version = '2';
  
 service cloud.firestore {
@@ -11,6 +12,12 @@ service cloud.firestore {
       allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
       allow get, update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
       allow list: if request.auth != null && request.query.where.size() == 1 && request.query.where[0].field == "userId" && request.query.where[0].op == "==" && request.query.where[0].value == request.auth.uid;
+    }
+
+    match /aiNfts/{aiNftId} {
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow get, update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow list: if request.auth != null;
     }
   }
 }

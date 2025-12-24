@@ -9,6 +9,10 @@ import { OwnedNfts, type OwnedNft } from '@/components/owned-nfts';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { TokenizeArt } from '@/components/tokenize-art';
+import { TokenizeAsset } from '@/components/tokenize-asset';
+import { ImageIcon, LinkIcon, Package } from 'lucide-react';
 
 export default function Home() {
   const [selectedNft, setSelectedNft] = useState<OwnedNft | null>(null);
@@ -19,7 +23,31 @@ export default function Home() {
       <div className="flex w-full max-w-7xl flex-col items-center gap-8 lg:flex-row lg:items-start lg:gap-12">
         <div className="w-full max-w-md">
           {isConnected ? (
-            <NFTFractionalizer selectedNft={selectedNft} />
+            <Tabs defaultValue="from-wallet">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="from-wallet">
+                  <LinkIcon className="mr-2" />
+                  From Wallet
+                </TabsTrigger>
+                <TabsTrigger value="from-ai">
+                  <ImageIcon className="mr-2" />
+                  From AI
+                </TabsTrigger>
+                <TabsTrigger value="from-asset">
+                  <Package className="mr-2" />
+                  Real-World Asset
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="from-wallet">
+                <NFTFractionalizer selectedNft={selectedNft} />
+              </TabsContent>
+              <TabsContent value="from-ai">
+                <TokenizeArt />
+              </TabsContent>
+              <TabsContent value="from-asset">
+                <TokenizeAsset />
+              </TabsContent>
+            </Tabs>
           ) : (
             <Card className="w-full max-w-md">
               <CardHeader>
