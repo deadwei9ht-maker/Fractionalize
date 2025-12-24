@@ -117,6 +117,17 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
       });
       return;
     }
+    
+    // Prevent fractionalizing a fractionalized NFT
+    if (nftContract.toLowerCase() === fractionalizerContractAddress.toLowerCase()) {
+      toast({
+        variant: "destructive",
+        title: "Action Not Allowed",
+        description: "You cannot fractionalize an already fractionalized NFT share token.",
+      });
+      return;
+    }
+
 
     setIsLoading(true);
     setShowResult(false);
@@ -156,6 +167,7 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
            userId: user.uid,
            nftContract: nftContract,
            tokenId: newId,
+           shareAmount: Number(finalShareAmount),
            createdAt: new Date().toISOString(),
          };
          await saveFractionalizedNft(db, nftData);
