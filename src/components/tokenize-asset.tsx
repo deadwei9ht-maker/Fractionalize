@@ -52,22 +52,22 @@ export function TokenizeAsset() {
 
   return (
     <Card className="w-full max-w-md border-accent bg-card shadow-[0_0_30px_hsl(var(--accent)/0.3)] rounded-[20px]">
-      <CardHeader className="text-center">
-        <CardTitle className="text-3xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
+      <CardHeader className="text-center p-4 md:p-6">
+        <CardTitle className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
           Tokenize a Real-World Asset
         </CardTitle>
         <CardDescription className="pt-2 text-white/80">
           Provide a description and proof of ownership for an asset to tokenize it into tradable shares.
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col gap-4">
+      <CardContent className="flex flex-col gap-4 p-4 md:p-6 pt-0">
         <Input
           id="asset-description"
           placeholder="Asset Description (e.g., 2023 Sports Car, Rolex Watch...)"
           value={assetDescription}
           onChange={(e) => setAssetDescription(e.target.value)}
           disabled={loading}
-          className="rounded-lg border-border/50 bg-input text-base"
+          className="rounded-lg border-border/50 bg-input text-sm md:text-base h-10 md:h-12"
         />
         
         <input
@@ -81,7 +81,7 @@ export function TokenizeAsset() {
             variant="outline"
             onClick={() => ownershipInputRef.current?.click()}
             disabled={loading}
-            className="w-full justify-center"
+            className="w-full justify-center h-10 md:h-12"
         >
             <Upload className="mr-2" />
             {ownershipFile ? `Selected: ${ownershipFile.name}` : 'Upload Proof of Ownership'}

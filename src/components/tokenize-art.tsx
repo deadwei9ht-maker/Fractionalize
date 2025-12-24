@@ -68,8 +68,8 @@ export function TokenizeArt() {
 
   return (
     <Card className="w-full max-w-md border-accent bg-card shadow-[0_0_30px_hsl(var(--accent)/0.3)] rounded-[20px]">
-      <CardHeader className="text-center">
-        <CardTitle className="text-3xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
+      <CardHeader className="text-center p-4 md:p-6">
+        <CardTitle className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
           Tokenize AI Art
         </CardTitle>
         <CardDescription className="pt-2 text-white/80">
@@ -77,14 +77,14 @@ export function TokenizeArt() {
           shares.
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col gap-4">
+      <CardContent className="flex flex-col gap-4 p-4 md:p-6 pt-0">
         <Textarea
           id="art-prompt"
           placeholder="e.g., A majestic dragon soaring over a mystical forest at dawn."
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           disabled={loading}
-          className="min-h-[80px] rounded-lg border-border/50 bg-input text-base"
+          className="min-h-[80px] rounded-lg border-border/50 bg-input text-sm md:text-base"
         />
         <Button
           onClick={handleGenerate}
@@ -122,7 +122,7 @@ export function TokenizeArt() {
               )}
             </div>
             {generatedImage && !loading && (
-              <Button onClick={handleFractionalize} className="w-full">
+              <Button onClick={handleFractionalize} className="w-full h-10">
                 <ImageIcon className="mr-2" />
                 Fractionalize this Art
               </Button>

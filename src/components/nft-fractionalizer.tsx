@@ -206,8 +206,8 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
   return (
     <>
       <Card className="w-full max-w-md border-accent bg-card shadow-[0_0_30px_hsl(var(--accent)/0.3)] rounded-[20px]">
-        <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
+        <CardHeader className="text-center p-4 md:p-6">
+          <CardTitle className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
             Fractionalize Any NFT
           </CardTitle>
           <CardDescription className="pt-2 text-white/80">
@@ -215,7 +215,7 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
             <strong className="text-white">1 click</strong>.
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col gap-4">
+        <CardContent className="flex flex-col gap-4 p-4 md:p-6 pt-0">
           <Input
             type="text"
             id="nft"
@@ -223,7 +223,7 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
             value={nftContract}
             onChange={(e) => setNftContract(e.target.value)}
             disabled={isLoading}
-            className="h-12 rounded-lg border-border/50 bg-input text-base"
+            className="h-10 md:h-12 rounded-lg border-border/50 bg-input text-base"
           />
           <Input
             type="text"
@@ -238,7 +238,7 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
               }
             }}
             disabled={isLoading}
-            className="h-12 rounded-lg border-border/50 bg-input text-base"
+            className="h-10 md:h-12 rounded-lg border-border/50 bg-input text-base"
           />
           <Button
             id="go"
@@ -261,8 +261,8 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
         </CardContent>
 
         {showResult && (
-          <CardFooter className="mt-2 flex flex-col items-center gap-4 rounded-b-[20px] bg-accent/10 p-6">
-            <p className="text-center">
+          <CardFooter className="mt-2 flex flex-col items-center gap-4 rounded-b-[20px] bg-accent/10 p-4 md:p-6">
+            <p className="text-center text-sm md:text-base">
               Success! Your NFT is now{" "}
               <strong className="text-white">10,000 $SHARE-{displayTokenId}</strong> tokens.
             </p>
@@ -272,7 +272,7 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
                   <span className="truncate text-sm text-accent" title={shareUrl}>
                     {shareUrl}
                   </span>
-                  <Button variant="ghost" size="icon" onClick={handleCopyToClipboard} className="ml-2 shrink-0">
+                  <Button variant="ghost" size="icon" onClick={handleCopyToClipboard} className="ml-2 shrink-0 h-8 w-8">
                     <Copy className="h-4 w-4" />
                     <span className="sr-only">Copy link</span>
                   </Button>
@@ -285,7 +285,7 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
               id="uniswap"
               onClick={handleAddToUniswap}
               variant="secondary"
-              className="w-full"
+              className="w-full h-10"
             >
               Add to Uniswap (Testnet)
             </Button>
