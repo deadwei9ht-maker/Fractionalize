@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TokenizeArt } from '@/components/tokenize-art';
 import { TokenizeAsset } from '@/components/tokenize-asset';
-import { ImageIcon, LinkIcon, Home as HomeIcon } from 'lucide-react';
+import { ImageIcon, LinkIcon, Landmark as LandmarkIcon } from 'lucide-react';
 
 export default function HomePage() {
   const [selectedNft, setSelectedNft] = useState<OwnedNft | null>(null);
@@ -33,8 +33,8 @@ export default function HomePage() {
                   From AI
                 </TabsTrigger>
                 <TabsTrigger value="from-asset">
-                  <HomeIcon className="mr-2" />
-                  Real Estate
+                  <LandmarkIcon className="mr-2" />
+                  Real-World Asset
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="from-wallet">

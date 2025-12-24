@@ -75,22 +75,22 @@
       },
       "required": ["userId", "prompt", "imageUrl", "tokenId", "createdAt"]
     },
-    "RealEstate": {
-      "title": "Real Estate",
-      "description": "Represents a real estate asset that has been fractionalized.",
+    "RealWorldAsset": {
+      "title": "Real-World Asset",
+      "description": "Represents a real-world asset that has been fractionalized.",
       "type": "object",
       "properties": {
         "userId": {
           "type": "string",
           "description": "The ID of the user who owns the asset."
         },
-        "address": {
+        "description": {
           "type": "string",
-          "description": "The physical address of the real estate property."
+          "description": "A description of the asset (e.g., address, car model, jewelry type)."
         },
-        "deedUrl": {
+        "ownershipProofUrl": {
           "type": "string",
-          "description": "URL to the uploaded deed document in Firebase Storage."
+          "description": "URL to the uploaded proof of ownership document in Firebase Storage."
         },
         "identityUrl": {
           "type": "string",
@@ -106,7 +106,7 @@
           "description": "The timestamp when the asset was fractionalized."
         }
       },
-      "required": ["userId", "address", "deedUrl", "identityUrl", "tokenId", "createdAt"]
+      "required": ["userId", "description", "ownershipProofUrl", "identityUrl", "tokenId", "createdAt"]
     }
   },
   "auth": {
@@ -131,11 +131,11 @@
       },
       "description": "Stores information about fractionalized AI-generated art."
     },
-    "/realEstate/{propertyId}": {
+    "/realWorldAssets/{assetId}": {
       "schema": {
-        "$ref": "#/backend/entities/RealEstate"
+        "$ref": "#/backend/entities/RealWorldAsset"
       },
-      "description": "Stores information about fractionalized real estate properties."
+      "description": "Stores information about fractionalized real-world assets."
     }
   }
 }

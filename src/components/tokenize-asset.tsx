@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef } from 'react';
@@ -11,24 +10,24 @@ import {
 } from './ui/card';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
-import { File, Home, Upload, UserCheck } from 'lucide-react';
+import { Landmark, Upload, UserCheck } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 
 export function TokenizeAsset() {
-  const [address, setAddress] = useState('');
+  const [assetDescription, setAssetDescription] = useState('');
   const [loading, setLoading] = useState(false);
-  const [deedFile, setDeedFile] = useState<File | null>(null);
+  const [ownershipFile, setOwnershipFile] = useState<File | null>(null);
   const [identityFile, setIdentityFile] = useState<File | null>(null);
   
-  const deedInputRef = useRef<HTMLInputElement>(null);
+  const ownershipInputRef = useRef<HTMLInputElement>(null);
   const identityInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  const handleDeedFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleOwnershipFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setDeedFile(file);
+      setOwnershipFile(file);
     }
   };
 
@@ -40,11 +39,11 @@ export function TokenizeAsset() {
   };
 
   const handleFractionalize = () => {
-     if (!address.trim() || !deedFile || !identityFile) {
+     if (!assetDescription.trim() || !ownershipFile || !identityFile) {
         toast({
             variant: 'destructive',
             title: 'Missing Information',
-            description: 'Please provide the property address, deed, and proof of identity.',
+            description: 'Please provide the asset description, proof of ownership, and proof of identity.',
         });
         return;
     }
@@ -55,7 +54,7 @@ export function TokenizeAsset() {
         setLoading(false);
         toast({
             title: 'Fractionalization Initiated (Simulated)',
-            description: 'Your real estate asset is being tokenized on the testnet.',
+            description: 'Your real-world asset is being tokenized on the testnet.',
         });
     }, 2000);
   };
@@ -64,10 +63,10 @@ export function TokenizeAsset() {
     <Card className="w-full max-w-md border-accent bg-card shadow-[0_0_30px_hsl(var(--accent)/0.3)] rounded-[20px]">
       <CardHeader className="text-center">
         <CardTitle className="text-3xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
-          Tokenize Real Estate
+          Tokenize a Real-World Asset
         </CardTitle>
         <CardDescription className="pt-2 text-white/80">
-          Upload proof of ownership for a real-world property to tokenize it into tradable shares.
+          Upload proof of ownership for a real-world asset to tokenize it into tradable shares.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
@@ -80,29 +79,29 @@ export function TokenizeAsset() {
         </Alert>
 
         <Input
-          id="asset-address"
-          placeholder="Property Address (e.g., 123 Main St...)"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
+          id="asset-description"
+          placeholder="Asset Description (e.g., 2023 Sports Car, Rolex Watch...)"
+          value={assetDescription}
+          onChange={(e) => setAssetDescription(e.target.value)}
           disabled={loading}
           className="rounded-lg border-border/50 bg-input text-base"
         />
         
         <input
           type="file"
-          ref={deedInputRef}
-          onChange={handleDeedFileChange}
+          ref={ownershipInputRef}
+          onChange={handleOwnershipFileChange}
           className="hidden"
           accept=".pdf,image/*"
         />
         <Button 
             variant="outline"
-            onClick={() => deedInputRef.current?.click()}
+            onClick={() => ownershipInputRef.current?.click()}
             disabled={loading}
             className="w-full justify-center"
         >
             <Upload className="mr-2" />
-            {deedFile ? `Deed: ${deedFile.name}` : 'Upload Property Deed'}
+            {ownershipFile ? `Ownership: ${ownershipFile.name}` : 'Upload Proof of Ownership'}
         </Button>
 
         <input
@@ -124,7 +123,7 @@ export function TokenizeAsset() {
         
         <Button
           onClick={handleFractionalize}
-          disabled={loading || !deedFile || !identityFile || !address}
+          disabled={loading || !ownershipFile || !identityFile || !assetDescription}
           className="h-12 w-full rounded-lg bg-gradient-to-r from-accent to-primary text-lg font-bold text-primary-foreground transition-transform duration-300 hover:scale-[1.03]"
         >
           {loading ? (
@@ -134,8 +133,8 @@ export function TokenizeAsset() {
             </div>
           ) : (
             <>
-              <Home className="mr-2" />
-              Tokenize this Property
+              <Landmark className="mr-2" />
+              Tokenize this Asset
             </>
           )}
         </Button>
