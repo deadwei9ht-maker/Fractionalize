@@ -6,11 +6,15 @@ import { type FirebaseOptions } from 'firebase/app';
 import { Header } from '@/components/header';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5/react';
-import { WagmiConfig, createConfig, type State } from 'wagmi';
+import { WagmiConfig, createConfig, type State, useAccount } from 'wagmi';
 import { baseSepolia } from 'wagmi/chains';
+import { useUser } from '@/firebase/auth/use-user';
+import { useFirestore } from '@/firebase';
+import { logWalletConnection } from '@/lib/firestore-actions';
+import { useToast } from '@/hooks/use-toast';
 
 interface ProvidersProps {
   children: React.ReactNode;
@@ -24,6 +28,43 @@ const metadata = {
   url: 'https://app.firebase-studio.into-the-studio.dev/',
   icons: ['https://app.firebase-studio.into-the-studio.dev/favicon.ico'],
 };
+
+// A separate component to contain the wagmi hooks
+function WalletConnectionHandler({ children }: { children: React.ReactNode }) {
+  const { address, isConnected } = useAccount();
+  const { user } = useUser();
+  const db = useFirestore();
+  const { toast } = useToast();
+
+  // Use a ref to track if the connection has already been logged for this session
+  const hasLoggedConnection = useRef(false);
+
+  useEffect(() => {
+    if (isConnected && address && db && user && !hasLoggedConnection.current) {
+        logWalletConnection(db, {
+            walletAddress: address,
+            userId: user.uid
+        }).then(isFlagged => {
+            if (isFlagged) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Wallet Flagged',
+                    description: `Wallet ${address.slice(0, 6)}... has been flagged for unusual activity.`,
+                });
+            }
+        });
+        // Mark as logged for this session
+        hasLoggedConnection.current = true;
+    }
+     // Reset the ref when the user disconnects
+    if (!isConnected) {
+        hasLoggedConnection.current = false;
+    }
+  }, [isConnected, address, db, user, toast]);
+
+  return <>{children}</>;
+}
+
 
 export function Providers({
   children,
@@ -82,10 +123,12 @@ export function Providers({
   return (
     <WagmiConfig config={wagmiConfig}>
       <FirebaseProvider firebaseConfig={firebaseConfig}>
-        <Header />
-        {children}
-        <Toaster />
-        <FirebaseErrorListener />
+        <WalletConnectionHandler>
+          <Header />
+          {children}
+          <Toaster />
+          <FirebaseErrorListener />
+        </WalletConnectionHandler>
       </FirebaseProvider>
     </WagmiConfig>
   );

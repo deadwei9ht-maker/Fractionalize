@@ -14,6 +14,7 @@ import { TokenizeArt } from '@/components/tokenize-art';
 import { TokenizeAsset } from '@/components/tokenize-asset';
 import { ImageIcon, LinkIcon, Landmark as LandmarkIcon } from 'lucide-react';
 import { AskAlice } from '@/components/ask-alice';
+import { WalletActivityLog } from './wallet-activity-log';
 
 export function MainContent() {
   const [selectedNft, setSelectedNft] = useState<OwnedNft | null>(null);
@@ -70,6 +71,7 @@ export function MainContent() {
           </div>
           <OwnedNfts onNftSelect={setSelectedNft} selectedNft={selectedNft} />
           <NFTList />
+          <WalletActivityLog />
         </div>
       </div>
     </main>

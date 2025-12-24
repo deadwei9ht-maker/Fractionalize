@@ -1,7 +1,14 @@
 
 'use server';
 
-import { addDoc, collection, type Firestore } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  doc,
+  runTransaction,
+  serverTimestamp,
+  type Firestore,
+} from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import {
   FirestorePermissionError,
@@ -16,14 +23,19 @@ type FractionalizedNftData = {
   shareAmount: number;
 };
 
+type WalletConnectionData = {
+  walletAddress: string;
+  userId: string;
+};
+
+const CONNECTION_FLAG_THRESHOLD = 10;
+
 export async function saveFractionalizedNft(
   db: Firestore,
   data: FractionalizedNftData
 ) {
   const collectionRef = collection(db, 'fractionalizedNfts');
-  
-  // Use .catch() for error handling to work with the custom error emitter
-  // This avoids a try/catch block and uses the centralized error handling system.
+
   return addDoc(collectionRef, data).catch(async (serverError) => {
     const permissionError = new FirestorePermissionError({
       path: collectionRef.path,
@@ -31,10 +43,65 @@ export async function saveFractionalizedNft(
       requestResourceData: data,
     } satisfies SecurityRuleContext);
 
-    // Emit the error so the FirebaseErrorListener can display it as a toast.
     errorEmitter.emit('permission-error', permissionError);
-
-    // Re-throw the original error to allow the caller to handle the failed promise.
     throw serverError;
   });
+}
+
+export async function logWalletConnection(
+  db: Firestore,
+  data: WalletConnectionData
+) {
+  const activityDocRef = doc(db, 'walletActivity', data.walletAddress);
+  const logCollectionRef = collection(db, 'walletConnections');
+
+  try {
+    const isFlagged = await runTransaction(db, async (transaction) => {
+      // 1. Log the individual connection event
+      const logData = {
+        ...data,
+        connectedAt: serverTimestamp(),
+      };
+      transaction.set(doc(logCollectionRef), logData);
+
+      // 2. Get the current activity state
+      const activityDoc = await transaction.get(activityDocRef);
+      const now = new Date().toISOString();
+      let newFlaggedState = false;
+
+      if (!activityDoc.exists()) {
+        // If it's the first time, create the activity document
+        transaction.set(activityDocRef, {
+          connectionCount: 1,
+          lastConnectionAt: now,
+          flagged: false,
+        });
+      } else {
+        // If it exists, increment the count
+        const currentCount = activityDoc.data().connectionCount || 0;
+        const newCount = currentCount + 1;
+        newFlaggedState = newCount > CONNECTION_FLAG_THRESHOLD;
+        
+        transaction.update(activityDocRef, {
+          connectionCount: newCount,
+          lastConnectionAt: now,
+          flagged: newFlaggedState,
+        });
+      }
+      return newFlaggedState;
+    });
+    return isFlagged;
+
+  } catch (serverError: any) {
+     const permissionError = new FirestorePermissionError({
+      path: activityDocRef.path,
+      operation: 'write',
+      requestResourceData: data,
+    } satisfies SecurityRuleContext);
+
+    errorEmitter.emit('permission-error', permissionError);
+    // We don't re-throw here because logging failure shouldn't block the UI
+    console.error("Failed to log wallet connection:", serverError);
+    return false; // Return false as the flagging state is unknown/failed
+  }
 }

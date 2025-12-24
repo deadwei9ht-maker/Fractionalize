@@ -111,6 +111,48 @@
         }
       },
       "required": ["userId", "description", "ownershipProofUrl", "identityUrl", "tokenId", "createdAt"]
+    },
+    "WalletConnection": {
+      "title": "Wallet Connection",
+      "description": "Logs an individual wallet connection event.",
+      "type": "object",
+      "properties": {
+        "walletAddress": {
+          "type": "string",
+          "description": "The wallet address that connected."
+        },
+        "connectedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp of the connection."
+        },
+        "userId": {
+            "type": "string",
+            "description": "The ID of the authenticated user, if available."
+        }
+      },
+      "required": ["walletAddress", "connectedAt"]
+    },
+    "WalletActivity": {
+      "title": "Wallet Activity",
+      "description": "Aggregates connection activity for a single wallet address.",
+      "type": "object",
+      "properties": {
+        "connectionCount": {
+          "type": "number",
+          "description": "Total number of connections from this wallet."
+        },
+        "lastConnectionAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp of the last connection."
+        },
+        "flagged": {
+          "type": "boolean",
+          "description": "True if the wallet has been flagged for suspicious activity."
+        }
+      },
+      "required": ["connectionCount", "lastConnectionAt"]
     }
   },
   "auth": {
@@ -140,6 +182,18 @@
         "$ref": "#/backend/entities/RealWorldAsset"
       },
       "description": "Stores information about fractionalized real-world assets."
+    },
+    "/walletConnections/{connectionId}": {
+        "schema": {
+            "$ref": "#/backend/entities/WalletConnection"
+        },
+        "description": "Logs each time a wallet connects to the app."
+    },
+    "/walletActivity/{walletAddress}": {
+        "schema": {
+            "$ref": "#/backend/entities/WalletActivity"
+        },
+        "description": "Tracks connection counts and flags for each wallet address."
     }
   }
 }
