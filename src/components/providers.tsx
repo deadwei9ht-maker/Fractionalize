@@ -78,8 +78,9 @@ export function Providers({
     const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
 
     if (!projectId) {
-      console.error('NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is not set. Please set it in your environment.');
-      setError('NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is not set. Please add it to your environment variables to enable wallet connections.');
+      const errorMessage = 'NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is not set. Please add it to your environment variables to enable wallet connections.';
+      console.error(errorMessage);
+      setError(errorMessage);
       return;
     }
 
@@ -102,7 +103,6 @@ export function Providers({
     });
     
     setInitialized(true);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (error) {
