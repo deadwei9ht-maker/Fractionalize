@@ -13,6 +13,7 @@ type FractionalizedNftData = {
   nftContract: string;
   tokenId: string;
   createdAt: string;
+  shareAmount?: number;
 };
 
 export async function saveFractionalizedNft(

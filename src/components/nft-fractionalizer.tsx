@@ -25,6 +25,8 @@ import { UniswapDialog } from "./uniswap-dialog";
 import type { OwnedNft } from "./owned-nfts";
 import { saveFractionalizedNft } from "@/lib/firestore-actions";
 import { useFirestore } from "@/firebase";
+import { Slider } from "./ui/slider";
+import { Label } from "./ui/label";
 
 type NFTFractionalizerProps = {
   selectedNft?: OwnedNft | null;
@@ -35,7 +37,7 @@ const fractionalizerContractAddress = "0xd9145CCE52D386f254917e481eB44e9943F3913
 
 // The ABI for the JoshiFractions contract
 const fractionalizerAbi = [
-  "function fractionalize(address _nftContractAddress, uint256 _nftTokenId)",
+  "function fractionalize(address _nftContractAddress, uint256 _nftTokenId, uint256 _shareAmount)",
   "event NFTFractionalized(uint256 indexed newTokenId, address indexed nftContractAddress, uint256 indexed nftTokenId, address originalOwner, uint256 shareAmount)"
 ];
 
@@ -61,6 +63,7 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
 
   const [nftContract, setNftContract] = useState("");
   const [tokenId, setTokenId] = useState("");
+  const [shareAmount, setShareAmount] = useState(10000);
   const [showResult, setShowResult] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -136,7 +139,7 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
 
       // 3. Call the fractionalize function
       setLoadingMessage("Executing fractionalization...");
-      const fractionalizeTx = await fractionalizer.fractionalize(nftContract, tokenId);
+      const fractionalizeTx = await fractionalizer.fractionalize(nftContract, tokenId, shareAmount);
       
       setLoadingMessage("Confirming fractionalization...");
       const receipt = await fractionalizeTx.wait();
@@ -145,6 +148,7 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
       const event = receipt.events?.find((e: ethers.Event) => e.event === 'NFTFractionalized');
       if (event && event.args) {
          const newId = event.args.newTokenId.toString();
+         const finalShareAmount = event.args.shareAmount.toString();
          
          // 5. Save the record to Firestore
          setLoadingMessage("Saving record...");
@@ -160,7 +164,7 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
          setShowResult(true);
          toast({
             title: "Success!",
-            description: `Your NFT is now 10,000 $SHARE-${newId} tokens.`,
+            description: `Your NFT is now ${Number(finalShareAmount).toLocaleString()} $SHARE-${newId} tokens.`,
          });
       } else {
         throw new Error("Could not find NFTFractionalized event in transaction receipt.");
@@ -211,7 +215,7 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
             Fractionalize Any NFT
           </CardTitle>
           <CardDescription className="pt-2 text-white/80">
-            Turn 1 NFT → 10,000 tradable shares in{" "}
+            Turn 1 NFT into tradable shares in{" "}
             <strong className="text-white">1 click</strong>.
           </CardDescription>
         </CardHeader>
@@ -240,6 +244,21 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
             disabled={isLoading}
             className="h-10 md:h-12 rounded-lg border-border/50 bg-input text-base"
           />
+          <div className="flex flex-col gap-3">
+             <div className="flex justify-between items-center">
+                 <Label htmlFor="share-amount" className="text-white/80">Number of Shares</Label>
+                 <span className="text-sm font-semibold text-accent">{shareAmount.toLocaleString()}</span>
+             </div>
+            <Slider
+                id="share-amount"
+                min={2}
+                max={10000}
+                step={1}
+                value={[shareAmount]}
+                onValueChange={(value) => setShareAmount(value[0])}
+                disabled={isLoading}
+            />
+          </div>
           <Button
             id="go"
             onClick={handleFractionalize}
@@ -264,7 +283,7 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
           <CardFooter className="mt-2 flex flex-col items-center gap-4 rounded-b-[20px] bg-accent/10 p-4 md:p-6">
             <p className="text-center text-sm md:text-base">
               Success! Your NFT is now{" "}
-              <strong className="text-white">10,000 $SHARE-{displayTokenId}</strong> tokens.
+              <strong className="text-white">{shareAmount.toLocaleString()} $SHARE-{displayTokenId}</strong> tokens.
             </p>
             <div className="flex w-full items-center justify-center rounded-lg bg-background p-2">
               {shareUrl ? (

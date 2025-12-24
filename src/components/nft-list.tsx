@@ -22,6 +22,7 @@ type FractionalizedNft = {
   nftContract: string;
   tokenId: string;
   userId: string;
+  shareAmount: number;
 };
 
 // NOTE: Using a hardcoded free Alchemy API key.
@@ -32,6 +33,7 @@ const NFTListItem = ({ nft }: { nft: FractionalizedNft }) => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [metadataName, setMetadataName] = useState("");
+  const [shareAmount, setShareAmount] = useState(10000);
 
   useEffect(() => {
     const fetchMetadata = async () => {
@@ -52,6 +54,10 @@ const NFTListItem = ({ nft }: { nft: FractionalizedNft }) => {
            setImageUrl("https://picsum.photos/seed/error/128/128");
         }
         setMetadataName(data.title || `Token ${nft.tokenId}`);
+        // The event log for share amount is not easily queryable here,
+        // so we'll assume 10,000 for display purposes in this list.
+        // A more robust solution would involve a subgraph or indexing service.
+        setShareAmount(nft.shareAmount || 10000);
       } catch (error) {
         console.error("Error fetching NFT metadata:", error);
         // Fallback image if metadata fetch fails
@@ -63,7 +69,7 @@ const NFTListItem = ({ nft }: { nft: FractionalizedNft }) => {
     };
 
     fetchMetadata();
-  }, [nft.tokenId, nft.nftContract]);
+  }, [nft.tokenId, nft.nftContract, nft.shareAmount]);
 
   return (
     <div className="flex flex-col gap-2">
@@ -86,7 +92,7 @@ const NFTListItem = ({ nft }: { nft: FractionalizedNft }) => {
         <p className="font-semibold truncate text-white" title={metadataName}>
           {metadataName}
         </p>
-        <p className="text-xs text-accent">10,000 $SHARE-{nft.tokenId}</p>
+        <p className="text-xs text-accent">{shareAmount.toLocaleString()} $SHARE-{nft.tokenId}</p>
       </div>
     </div>
   );

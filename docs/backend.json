@@ -38,6 +38,10 @@
           "type": "string",
           "description": "The token ID of the NFT."
         },
+        "shareAmount": {
+          "type": "number",
+          "description": "The number of shares the NFT was fractionalized into."
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time",
