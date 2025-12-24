@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef } from 'react';
@@ -136,7 +137,7 @@ export function TokenizeAsset() {
           Tokenize a Real-World Asset
         </CardTitle>
         <CardDescription className="pt-2 text-white/80">
-          Provide documents for an asset to tokenize it into tradable shares, verified by AI.
+          An exploration of things to come: Provide documents for an asset to tokenize it into tradable shares, verified by AI.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4 p-4 md:p-6 pt-0">
