@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef } from 'react';
@@ -14,6 +13,12 @@ import { Button } from './ui/button';
 import { Landmark, Upload, ShieldCheck, ShieldAlert } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { verifyDocuments } from '@/ai/flows/verify-documents-flow';
+import { useUser } from '@/firebase/auth/use-user';
+import { useFirestore } from '@/firebase';
+import { uploadFile } from '@/lib/storage-actions';
+import { saveRealWorldAsset } from '@/lib/firestore-actions';
+import { getStorage } from 'firebase/storage';
+import { useFirebaseApp } from '@/firebase/provider';
 
 export function TokenizeAsset() {
   const [assetDescription, setAssetDescription] = useState('');
@@ -21,10 +26,13 @@ export function TokenizeAsset() {
   const [loadingMessage, setLoadingMessage] = useState('Initiating Tokenization...');
   const [ownershipFile, setOwnershipFile] = useState<File | null>(null);
   const [identityFile, setIdentityFile] = useState<File | null>(null);
-  
+
   const ownershipInputRef = useRef<HTMLInputElement>(null);
   const identityInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const { user } = useUser();
+  const db = useFirestore();
+  const app = useFirebaseApp();
 
   const fileToDataUri = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -41,7 +49,7 @@ export function TokenizeAsset() {
       setOwnershipFile(file);
     }
   };
-  
+
   const handleIdentityFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -50,6 +58,14 @@ export function TokenizeAsset() {
   };
 
   const handleFractionalize = async () => {
+    if (!user || !db || !app) {
+        toast({
+            variant: 'destructive',
+            title: 'Not Logged In',
+            description: 'You must be logged in to tokenize an asset.',
+        });
+        return;
+    }
      if (!assetDescription.trim() || !ownershipFile || !identityFile) {
         toast({
             variant: 'destructive',
@@ -58,7 +74,7 @@ export function TokenizeAsset() {
         });
         return;
     }
-    
+
     setLoading(true);
     setLoadingMessage('Verifying documents with AI...');
 
@@ -75,14 +91,27 @@ export function TokenizeAsset() {
       if (!verificationResult.verified) {
         throw new Error(verificationResult.reason || 'AI verification failed.');
       }
+
+      setLoadingMessage('Verification successful. Uploading files...');
+      const storage = getStorage(app);
+      const ownershipProofUrl = await uploadFile(storage, `proofs/${user.uid}/${ownershipFile.name}`, ownershipFile);
+      const identityUrl = await uploadFile(storage, `identities/${user.uid}/${identityFile.name}`, identityFile);
       
-      setLoadingMessage('Verification successful. Tokenizing...');
-      // This would be where we hook into the fractionalization contract
-      // and upload files to a secure storage. For now, it's a placeholder.
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      setLoadingMessage('Saving asset to registry...');
+      // This would be where a real smart contract creates the token ID.
+      const simulatedTokenId = `RWA-${Date.now()}`;
+
+      await saveRealWorldAsset(db, {
+          userId: user.uid,
+          description: assetDescription,
+          ownershipProofUrl,
+          identityUrl,
+          tokenId: simulatedTokenId,
+          createdAt: new Date().toISOString(),
+      });
 
       toast({
-        title: 'Asset Tokenized! (Simulated)',
+        title: 'Asset Tokenized!',
         description: 'Your real-world asset is now fractionalized on the testnet.',
         action: <div className="p-2 rounded-full bg-green-500/20"><ShieldCheck className="h-5 w-5 text-green-500" /></div>,
       });
@@ -91,7 +120,7 @@ export function TokenizeAsset() {
         console.error('Verification or tokenization error:', error);
         toast({
             variant: 'destructive',
-            title: 'Verification Failed',
+            title: 'Tokenization Failed',
             description: error.message,
             action: <div className="p-2 rounded-full bg-destructive/20"><ShieldAlert className="h-5 w-5 text-destructive-foreground" /></div>,
         });
