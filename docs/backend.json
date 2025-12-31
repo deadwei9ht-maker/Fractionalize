@@ -108,6 +108,18 @@
           "type": "string",
           "format": "date-time",
           "description": "The timestamp when the asset was fractionalized."
+        },
+        "extractedName": {
+          "type": "string",
+          "description": "The name extracted from the identity document by the AI."
+        },
+        "extractedAssetDetails": {
+            "type": "string",
+            "description": "Key details about the asset extracted from the ownership document by the AI."
+        },
+        "verificationSummary": {
+            "type": "string",
+            "description": "The AI's summary of the verification process and its findings."
         }
       },
       "required": ["userId", "description", "ownershipProofUrl", "identityUrl", "tokenId", "createdAt"]

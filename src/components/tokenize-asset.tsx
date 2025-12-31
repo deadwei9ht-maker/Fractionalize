@@ -78,7 +78,7 @@ export function TokenizeAsset() {
     }
 
     setLoading(true);
-    setLoadingMessage('Verifying documents with AI...');
+    setLoadingMessage('Verifying documents & extracting metadata with AI...');
 
     try {
       const ownershipDataUri = await fileToDataUri(ownershipFile);
@@ -99,7 +99,7 @@ export function TokenizeAsset() {
       const ownershipProofUrl = await uploadFile(storage, `proofs/${user.uid}/${ownershipFile.name}`, ownershipFile);
       const identityUrl = await uploadFile(storage, `identities/${user.uid}/${identityFile.name}`, identityFile);
       
-      setLoadingMessage('Saving asset to registry...');
+      setLoadingMessage('Saving asset and metadata to registry...');
       // This would be where a real smart contract creates the token ID.
       const simulatedTokenId = `RWA-${Date.now()}`;
 
@@ -110,11 +110,14 @@ export function TokenizeAsset() {
           identityUrl,
           tokenId: simulatedTokenId,
           createdAt: new Date().toISOString(),
+          extractedName: verificationResult.extractedName,
+          extractedAssetDetails: verificationResult.extractedAssetDetails,
+          verificationSummary: verificationResult.verificationSummary,
       });
 
       toast({
         title: 'Asset Tokenized!',
-        description: 'Your real-world asset is now fractionalized on the testnet.',
+        description: 'Asset verified and metadata extracted. Your asset is now on the testnet.',
         action: <div className="p-2 rounded-full bg-green-500/20"><ShieldCheck className="h-5 w-5 text-green-500" /></div>,
       });
 

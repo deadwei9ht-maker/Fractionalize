@@ -23,6 +23,14 @@ type FractionalizedNftData = {
   shareAmount: number;
 };
 
+type AiNftData = {
+    userId: string;
+    prompt: string;
+    imageUrl: string;
+    tokenId: string;
+    createdAt: string;
+};
+
 type RealWorldAssetData = {
     userId: string;
     description: string;
@@ -30,6 +38,9 @@ type RealWorldAssetData = {
     identityUrl: string;
     tokenId: string;
     createdAt: string;
+    extractedName: string;
+    extractedAssetDetails: string;
+    verificationSummary: string;
 };
 
 type WalletConnectionData = {
@@ -52,6 +63,19 @@ export async function saveFractionalizedNft(
       requestResourceData: data,
     } satisfies SecurityRuleContext);
 
+    errorEmitter.emit('permission-error', permissionError);
+    throw serverError;
+  });
+}
+
+export async function saveAiNft(db: Firestore, data: AiNftData) {
+  const collectionRef = collection(db, 'aiNfts');
+  return addDoc(collectionRef, data).catch(async (serverError) => {
+    const permissionError = new FirestorePermissionError({
+      path: collectionRef.path,
+      operation: 'create',
+      requestResourceData: data,
+    } satisfies SecurityRuleContext);
     errorEmitter.emit('permission-error', permissionError);
     throw serverError;
   });

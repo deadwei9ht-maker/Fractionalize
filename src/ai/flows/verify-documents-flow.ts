@@ -1,7 +1,7 @@
 
 'use server';
 /**
- * @fileOverview An AI flow for verifying real-world asset documentation.
+ * @fileOverview An AI flow for verifying real-world asset documentation and extracting metadata.
  *
  * - verifyDocuments - A function that calls the document verification model.
  * - VerifyDocumentsInput - The input type for the verifyDocuments function.
@@ -29,6 +29,9 @@ export type VerifyDocumentsInput = z.infer<typeof VerifyDocumentsInputSchema>;
 const VerifyDocumentsOutputSchema = z.object({
   verified: z.boolean().describe('Whether the documents passed verification.'),
   reason: z.string().describe('The reason for the verification outcome.'),
+  extractedName: z.string().describe("The full name extracted from the identity document."),
+  extractedAssetDetails: z.string().describe("Key details about the asset extracted from the ownership document."),
+  verificationSummary: z.string().describe("A summary of the verification process and findings.")
 });
 export type VerifyDocumentsOutput = z.infer<typeof VerifyDocumentsOutputSchema>;
 
@@ -37,23 +40,24 @@ const verificationPrompt = ai.definePrompt({
     name: 'verifyDocumentsPrompt',
     input: { schema: VerifyDocumentsInputSchema },
     output: { schema: VerifyDocumentsOutputSchema },
-    prompt: `You are an AI verification agent for an asset fractionalization platform. Your task is to analyze the provided documents to determine if the user has a legitimate claim to the asset.
+    prompt: `You are an AI verification agent for an asset fractionalization platform. Your task is to analyze the provided documents to determine if the user has a legitimate claim to the asset, and to extract key metadata.
 
     Analyze the following:
     1.  **Identity Document**: {{media url=identityDataUri}}
     2.  **Ownership Document**: {{media url=ownershipProofDataUri}}
     3.  **Asset Description**: "{{assetDescription}}"
 
-    **Verification Steps:**
-    1.  Extract the name from the Identity Document.
-    2.  Extract the name from the Ownership Document.
-    3.  Compare the names. They must match exactly.
-    4.  Check if the asset described in the Ownership Document matches the user's Asset Description.
-    5.  Assess the overall legitimacy. Look for signs of tampering, mismatched information, or implausible claims.
+    **Verification and Extraction Steps:**
+    1.  **Extract Name**: Extract the full name from the Identity Document.
+    2.  **Extract Asset Details**: Extract the core details of the asset from the Ownership Document (e.g., for a car: VIN, make, model; for a property: address, parcel number; for jewelry: item description, appraisal value).
+    3.  **Compare**: Check if the name from the Identity Document appears on the Ownership Document.
+    4.  **Assess Legitimacy**: Check if the asset described in the Ownership Document matches the user's Asset Description. Look for signs of tampering, mismatched information, or implausible claims.
+    5.  **Summarize**: Provide a brief summary of your findings.
 
-    **Decision:**
-    - If names match and the asset description is consistent with the ownership proof, set 'verified' to true and provide a success reason.
-    - If there are any discrepancies (mismatched names, inconsistent asset details, signs of forgery), set 'verified' to false and provide a clear, concise reason for the failure.
+    **Decision and Output:**
+    - If names match and the asset description is consistent, set 'verified' to true.
+    - If there are discrepancies, set 'verified' to false.
+    - Populate all output fields: 'verified', 'reason', 'extractedName', 'extractedAssetDetails', and 'verificationSummary' with your findings.
     `,
 });
 
@@ -69,6 +73,9 @@ const verifyDocumentsFlow = ai.defineFlow(
       return {
         verified: false,
         reason: 'The AI model could not process the verification request.',
+        extractedName: "N/A",
+        extractedAssetDetails: "N/A",
+        verificationSummary: "AI model failed to respond.",
       };
     }
     return output;
