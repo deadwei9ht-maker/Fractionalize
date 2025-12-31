@@ -11,7 +11,7 @@ import {
 } from './ui/card';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
-import { Landmark, Upload, ShieldCheck, ShieldAlert, TriangleAlert } from 'lucide-react';
+import { Landmark, Upload, ShieldCheck, ShieldAlert, TriangleAlert, Info } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { verifyDocuments } from '@/ai/flows/verify-documents-flow';
 import { useUser } from '@/firebase/auth/use-user';
@@ -149,6 +149,13 @@ export function TokenizeAsset() {
             While this feature is exploratory, proceeding will execute a real smart contract transaction on the testnet. This action is irreversible and will incur gas fees.
           </AlertDescription>
         </Alert>
+         <Alert>
+          <Info className="h-4 w-4" />
+          <AlertTitle>Important Disclaimer</AlertTitle>
+          <AlertDescription>
+            This is not a legal title transfer service. Tokenization creates a digital representation of your asset based on the documents you provide. For assets with a lien (e.g., a mortgage or car loan), the minted token will reflect both the owner and the lender as shown in your proof documents.
+          </AlertDescription>
+        </Alert>
         <Input
           id="asset-description"
           placeholder="Asset Description (e.g., 2023 Sports Car, Rolex Watch...)"
@@ -213,5 +220,3 @@ export function TokenizeAsset() {
     </Card>
   );
 }
-
-    
