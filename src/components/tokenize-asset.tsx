@@ -156,6 +156,13 @@ export function TokenizeAsset() {
             This is not a legal title transfer service. Tokenization creates a digital representation of your asset based on the documents you provide. For assets with a lien (e.g., a mortgage or car loan), the minted token will reflect both the owner and the lender as shown in your proof documents.
           </AlertDescription>
         </Alert>
+        <Alert>
+          <Info className="h-4 w-4" />
+          <AlertTitle>Requirements for Non-Deeded Assets</AlertTitle>
+          <AlertDescription>
+            For assets like collectibles, jewelry, or art that do not have a standard deed, you must provide a current, verifiable appraisal. Acceptable documents include an insurance proof-of-value, an official appraisal certificate, or a notarized bill of sale.
+          </AlertDescription>
+        </Alert>
         <Input
           id="asset-description"
           placeholder="Asset Description (e.g., 2023 Sports Car, Rolex Watch...)"
