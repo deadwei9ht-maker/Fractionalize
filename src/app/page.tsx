@@ -1,6 +1,12 @@
 
 import { MainContent } from '@/components/main-content';
+import { Header } from '@/components/header';
 
 export default function HomePage() {
-  return <MainContent />;
+  return (
+    <>
+      <Header />
+      <MainContent />
+    </>
+  );
 }

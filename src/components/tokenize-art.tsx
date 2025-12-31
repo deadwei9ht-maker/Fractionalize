@@ -17,13 +17,21 @@ import { generateArt } from '@/ai/flows/generate-art-flow';
 import Image from 'next/image';
 import { Skeleton } from './ui/skeleton';
 import { Badge } from './ui/badge';
+import { useUser } from '@/firebase/auth/use-user';
+import { useFirestore } from '@/firebase';
+import { saveAiNft } from '@/lib/firestore-actions';
+
 
 export function TokenizeArt() {
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [joshiShareId, setJoshiShareId] = useState<string | null>(null);
+  const [isFractionalizing, setIsFractionalizing] = useState(false);
+
   const { toast } = useToast();
+  const { user } = useUser();
+  const db = useFirestore();
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
@@ -44,7 +52,7 @@ export function TokenizeArt() {
         setJoshiShareId(result.joshiShareId);
         toast({
           title: 'Art Generated!',
-          description: 'Your new masterpiece is ready.',
+          description: 'Your new masterpiece is ready to be tokenized.',
         });
       } else {
         throw new Error('Image generation failed to return a URL or ID.');
@@ -61,13 +69,53 @@ export function TokenizeArt() {
     }
   };
 
-  const handleFractionalize = () => {
-    // This would be where we hook into the fractionalization contract.
-    // For now, it's a placeholder.
-    toast({
-      title: 'Fractionalization Initiated (Simulated)',
-      description: `Your AI-generated art (${joshiShareId}) is being tokenized.`,
-    });
+  const handleFractionalize = async () => {
+    if (!user || !db) {
+        toast({
+            variant: "destructive",
+            title: "Authentication Required",
+            description: "Please log in to tokenize your art.",
+        });
+        return;
+    }
+    if (!generatedImage || !joshiShareId) {
+        toast({
+            variant: "destructive",
+            title: "No Art to Tokenize",
+            description: "Please generate an image first.",
+        });
+        return;
+    }
+
+    setIsFractionalizing(true);
+    try {
+        await saveAiNft(db, {
+            userId: user.uid,
+            prompt: prompt,
+            imageUrl: generatedImage,
+            tokenId: joshiShareId,
+            createdAt: new Date().toISOString(),
+        });
+
+        toast({
+            title: 'Success!',
+            description: `Your AI art (${joshiShareId}) has been tokenized and saved to your portfolio.`,
+        });
+
+        // Reset the form after successful tokenization
+        setPrompt('');
+        setGeneratedImage(null);
+        setJoshiShareId(null);
+    } catch (error: any) {
+        console.error('Error saving AI NFT:', error);
+        toast({
+            variant: "destructive",
+            title: "Tokenization Failed",
+            description: error.message || "Could not save the tokenized art.",
+        });
+    } finally {
+        setIsFractionalizing(false);
+    }
   };
 
   return (
@@ -87,12 +135,12 @@ export function TokenizeArt() {
           placeholder="e.g., A majestic dragon soaring over a mystical forest at dawn."
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          disabled={loading}
+          disabled={loading || isFractionalizing}
           className="min-h-[80px] rounded-lg border-border/50 bg-input text-sm md:text-base"
         />
         <Button
           onClick={handleGenerate}
-          disabled={loading}
+          disabled={loading || isFractionalizing || !!generatedImage}
           className="h-12 w-full rounded-lg bg-gradient-to-r from-accent to-primary text-lg font-bold text-primary-foreground transition-transform duration-300 hover:scale-[1.03]"
         >
           {loading ? (
@@ -131,9 +179,18 @@ export function TokenizeArt() {
                </div>
             )}
             {generatedImage && !loading && (
-              <Button onClick={handleFractionalize} className="w-full h-10">
-                <ImageIcon className="mr-2" />
-                Fractionalize this Art
+              <Button onClick={handleFractionalize} disabled={isFractionalizing} className="w-full h-10">
+                 {isFractionalizing ? (
+                    <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-primary-foreground/50 border-t-primary-foreground rounded-full animate-spin" />
+                        <span>Tokenizing...</span>
+                    </div>
+                 ) : (
+                    <>
+                        <ImageIcon className="mr-2" />
+                        Tokenize this Art
+                    </>
+                 )}
               </Button>
             )}
           </div>

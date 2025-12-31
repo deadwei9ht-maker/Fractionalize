@@ -4,7 +4,6 @@
 import { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { NFTFractionalizer } from '@/components/nft-fractionalizer';
-import { NFTList } from '@/components/nft-list';
 import { OwnedNfts, type OwnedNft } from '@/components/owned-nfts';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -15,6 +14,8 @@ import { TokenizeAsset } from '@/components/tokenize-asset';
 import { ImageIcon, LinkIcon, Landmark as LandmarkIcon } from 'lucide-react';
 import { AskAlice } from '@/components/ask-alice';
 import { WalletActivityLog } from './wallet-activity-log';
+import { TokenizedItemsList } from './tokenized-items-list';
+import { DonationTracker } from './donation-tracker';
 
 export function MainContent() {
   const [selectedNft, setSelectedNft] = useState<OwnedNft | null>(null);
@@ -69,8 +70,9 @@ export function MainContent() {
           <div className="flex justify-end">
             <AskAlice />
           </div>
+          <DonationTracker />
           <OwnedNfts onNftSelect={setSelectedNft} selectedNft={selectedNft} />
-          <NFTList />
+          <TokenizedItemsList />
           <WalletActivityLog />
         </div>
       </div>

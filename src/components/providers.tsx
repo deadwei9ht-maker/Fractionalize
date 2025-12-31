@@ -3,7 +3,6 @@
 
 import { FirebaseProvider } from '@/firebase/provider';
 import { type FirebaseOptions } from 'firebase/app';
-import { Header } from '@/components/header';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { useEffect, useState, useRef } from 'react';
@@ -124,7 +123,6 @@ export function Providers({
     <WagmiConfig config={wagmiConfig}>
       <FirebaseProvider firebaseConfig={firebaseConfig}>
         <WalletConnectionHandler>
-          <Header />
           {children}
           <Toaster />
           <FirebaseErrorListener />
