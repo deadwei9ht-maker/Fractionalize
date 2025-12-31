@@ -42,9 +42,12 @@ export default function RootLayout({
             {children}
           </div>
         </Providers>
-        <footer className="w-full p-4 text-center">
+        <footer className="w-full p-4 text-center space-y-2">
           <p className="text-xs text-muted-foreground">
             Brought To You By &quot;The House Of Joshi&quot;
+          </p>
+          <p className="text-xs text-muted-foreground max-w-md mx-auto">
+            Your wallet keys are never sent to our servers. All transactions require your explicit approval in your wallet. Uploaded documents for asset verification are stored securely.
           </p>
         </footer>
       </body>
