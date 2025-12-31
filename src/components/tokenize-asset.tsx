@@ -145,6 +145,13 @@ export function TokenizeAsset() {
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4 p-4 md:p-6 pt-0">
+        <Alert>
+          <Info className="h-4 w-4" />
+          <AlertTitle>What is Asset Tokenization?</AlertTitle>
+          <AlertDescription>
+            Think of this as creating a secure digital file for your asset. The important documents you would save from a house fire are the ones you'll want to attach to your asset's token. This creates a permanent, verifiable record on the blockchain.
+          </AlertDescription>
+        </Alert>
         <Alert variant="destructive" className="border-primary/50 text-primary-foreground bg-primary/10">
           <TriangleAlert className="h-4 w-4 text-primary" />
           <AlertTitle className="text-primary">Live Testnet Feature</AlertTitle>
