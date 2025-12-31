@@ -1,14 +1,58 @@
 'use client';
 
-import { CheckCircle, Zap, Percent } from 'lucide-react';
+import { CheckCircle, Zap, Percent, Bot, Landmark } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 export function Pricing() {
+  const tiers = [
+    {
+      name: 'Fractionalize from Wallet',
+      price: '0.005 ETH',
+      description: 'For turning an existing NFT into tradable shares.',
+      icon: Zap,
+      features: [
+        '1-click fractionalization',
+        'Up to 10,000 liquid shares',
+        'Shareable token page',
+        'Instant liquidity potential',
+      ],
+      className: 'border-accent/30 shadow-[0_0_20px_hsl(var(--accent)/0.2)]',
+      iconColor: 'text-accent',
+    },
+    {
+      name: 'Tokenize AI Art',
+      price: '0.008 ETH',
+      description: 'Generate unique art with AI and instantly tokenize it.',
+      icon: Bot,
+      features: [
+        'AI-powered image generation',
+        'Your imagination, tokenized',
+        'Creates a brand new asset',
+        'Ready for fractionalization',
+      ],
+      className: 'border-primary/30 shadow-[0_0_20px_hsl(var(--primary)/0.2)]',
+      iconColor: 'text-primary',
+    },
+    {
+        name: 'Tokenize Real-World Asset',
+        price: '0.02 ETH',
+        description: 'Create a digital twin of a physical asset, verified by AI.',
+        icon: Landmark,
+        features: [
+            'AI document verification',
+            'Securely link documents to token',
+            'Creates verifiable ownership record',
+            'Brings real-world value on-chain',
+        ],
+        className: 'border-accent/30 shadow-[0_0_20px_hsl(var(--accent)/0.2)] md:col-span-2 lg:col-span-1',
+        iconColor: 'text-accent',
+    }
+  ];
+
   return (
-    <div className="flex w-full max-w-4xl flex-col items-center gap-8 text-center">
+    <div className="flex w-full max-w-6xl flex-col items-center gap-8 text-center">
       <div className="flex flex-col gap-2">
         <h1 className="text-4xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
           Simple, Transparent Pricing
@@ -17,82 +61,58 @@ export function Pricing() {
           No subscriptions. No hidden costs. Pay only for what you use.
         </p>
       </div>
-      <div className="grid w-full grid-cols-1 gap-8 md:grid-cols-2">
-        <Card className="flex flex-col border-accent/30 bg-card/70 shadow-[0_0_20px_hsl(var(--accent)/0.2)]">
-          <CardHeader>
-            <CardTitle className="flex items-center justify-center gap-2 text-2xl">
-              <Zap className="h-6 w-6 text-accent" />
-              Upfront Fee
-            </CardTitle>
-            <CardDescription>For fractionalizing your NFT.</CardDescription>
-          </CardHeader>
-          <CardContent className="flex-grow">
-            <div className="text-4xl font-bold">
-              0.01 ETH
-              <span className="text-base font-normal text-muted-foreground"> + Gas</span>
-            </div>
-            <p className="mt-4 text-muted-foreground">
-              A one-time fee to cover the smart contract interaction and platform service for turning your NFT into 10,000 shares.
-            </p>
-          </CardContent>
-          <CardContent>
-             <ul className="flex flex-col gap-3 text-left">
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-accent" />
-                  <span>1-click fractionalization</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-accent" />
-                  <span>10,000 liquid shares created</span>
-                </li>
-                 <li className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-accent" />
-                  <span>Shareable token page</span>
-                </li>
-              </ul>
-          </CardContent>
-        </Card>
-        
-        <Card className="flex flex-col border-primary/30 bg-card/70 shadow-[0_0_20px_hsl(var(--primary)/0.2)]">
-          <CardHeader>
-            <CardTitle className="flex items-center justify-center gap-2 text-2xl">
-              <Percent className="h-6 w-6 text-primary" />
-              Trading Fee
-            </CardTitle>
-            <CardDescription>On all token sales.</CardDescription>
-          </CardHeader>
-          <CardContent className="flex-grow">
-            <div className="text-4xl font-bold">2.5%</div>
-            <p className="mt-4 text-muted-foreground">
-              A small percentage fee is collected from the seller on every secondary market transaction of your NFT shares.
-            </p>
-          </CardContent>
-           <CardContent>
-             <ul className="flex flex-col gap-3 text-left">
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-accent" />
-                  <span>Fee on secondary sales only</span>
-                </li>
-                 <li className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-accent" />
-                  <span>We only win when you win</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-accent" />
-                  <span>Funds continued development</span>
-                </li>
-              </ul>
-          </CardContent>
-        </Card>
+      <div className="grid w-full grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+        {tiers.map((tier) => (
+            <Card key={tier.name} className={`flex flex-col bg-card/70 ${tier.className}`}>
+                <CardHeader>
+                    <CardTitle className="flex items-center justify-center gap-2 text-2xl">
+                    <tier.icon className={`h-6 w-6 ${tier.iconColor}`} />
+                    {tier.name}
+                    </CardTitle>
+                    <CardDescription>{tier.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="flex-grow">
+                    <div className="text-4xl font-bold">
+                    {tier.price}
+                    <span className="text-base font-normal text-muted-foreground"> + Gas</span>
+                    </div>
+                     <ul className="mt-6 flex flex-col gap-3 text-left">
+                        {tier.features.map((feature) => (
+                            <li key={feature} className="flex items-center gap-2">
+                            <CheckCircle className="h-5 w-5 text-green-500" />
+                            <span>{feature}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </CardContent>
+                <CardContent>
+                     <Link href="/">
+                        <Button
+                            className="h-12 w-full rounded-lg bg-gradient-to-r from-accent to-primary text-lg font-bold text-primary-foreground transition-transform duration-300 hover:scale-[1.03]"
+                        >
+                            Get Started
+                        </Button>
+                    </Link>
+                </CardContent>
+            </Card>
+        ))}
       </div>
-       <div className="mt-4 w-full max-w-md">
-         <Link href="/">
-            <Button
-                className="h-12 w-full rounded-lg bg-gradient-to-r from-accent to-primary text-lg font-bold text-primary-foreground transition-transform duration-300 hover:scale-[1.03]"
-              >
-                Get Started Now
-            </Button>
-         </Link>
+       <div className="mt-4 w-full grid grid-cols-1 gap-8 md:px-16">
+         <Card className="flex flex-col border-border/20 bg-card/50 md:flex-row md:items-center">
+          <CardHeader className="flex-1">
+            <CardTitle className="flex items-center justify-center gap-2 text-2xl md:justify-start">
+              <Percent className="h-6 w-6 text-muted-foreground" />
+              Platform Fee
+            </CardTitle>
+            <CardDescription className="md:text-left">A small fee to support the platform, charged only on successful sales.</CardDescription>
+          </CardHeader>
+          <CardContent className="pb-6 md:p-6">
+            <div className="text-4xl font-bold">2.5%</div>
+            <p className="mt-1 text-muted-foreground">
+              On all secondary market trades.
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
