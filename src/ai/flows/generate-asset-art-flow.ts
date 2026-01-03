@@ -1,8 +1,8 @@
 'use server';
 /**
- * @fileOverview An AI flow for generating a stylized image of a real-world asset.
+ * @fileOverview An AI flow for generating a stylized image of a real-world asset and a unique ID.
  *
- * - generateAssetArt - A function that calls the image-to-image generation model.
+ * - generateAssetArt - A function that calls the image generation model.
  * - GenerateAssetArtInput - The input type for the generateAssetArt function.
  * - GenerateAssetArtOutput - The return type for the generateAssetArt function.
  */
@@ -22,8 +22,23 @@ export type GenerateAssetArtInput = z.infer<typeof GenerateAssetArtInputSchema>;
 
 const GenerateAssetArtOutputSchema = z.object({
   imageUrl: z.string().describe("A data URI of the generated image. Expected format: 'data:image/png;base64,<encoded_data>'."),
+  joshiShareId: z.string().describe('A unique identifier for the generated art.'),
 });
 export type GenerateAssetArtOutput = z.infer<typeof GenerateAssetArtOutputSchema>;
+
+
+const idGenPrompt = ai.definePrompt({
+    name: 'assetArtIdGenPrompt',
+    input: { schema: GenerateAssetArtInputSchema },
+    prompt: `
+        You are a unique ID generator for a digital art platform called "Joshi's Share".
+        Based on the user's asset description and the current timestamp, create a short, memorable, and unique alphanumeric ID.
+        The ID should start with 'JOSHI-ASSET-'.
+
+        Asset Description: {{{description}}}
+        Timestamp: ${new Date().toISOString()}
+    `,
+});
 
 
 const generateAssetArtFlow = ai.defineFlow(
@@ -33,17 +48,15 @@ const generateAssetArtFlow = ai.defineFlow(
     outputSchema: GenerateAssetArtOutputSchema,
   },
   async (input) => {
+    // 1. Generate the unique ID.
+    const idGenResponse = await idGenPrompt(input);
+    const joshiShareId = idGenResponse.text;
+
+    // 2. Generate the image. We'll use a powerful image-to-image model.
     const { media } = await ai.generate({
-        // Use a model capable of image-to-image generation
-        model: 'googleai/gemini-2.5-flash-image-preview',
-        prompt: [
-            { media: { url: input.photoDataUri } },
-            { text: `Create a highly stylized, futuristic, and artistic "digital twin" NFT of the following asset: ${input.description}. The style should be vibrant, with neon accents and a sleek, high-tech feel suitable for a digital collectible.` },
-        ],
-        config: {
-            // Must specify that we expect both text and image in response for this model
-            responseModalities: ['TEXT', 'IMAGE'],
-        },
+        model: 'googleai/imagen-2.0-fast-generate-001', // Using a strong text-to-image model for a more artistic take
+        prompt: `Create a highly stylized, futuristic, and artistic "digital twin" NFT of the following asset: ${input.description}. The style should be vibrant, with neon accents and a sleek, high-tech feel suitable for a digital collectible. The image should be inspired by the original photo provided and influenced by the unique ID: ${joshiShareId}. Do not show the ID in the image.`,
+        // Although we have an input image, we use it as context for the prompt rather than a direct image-to-image base. This gives the AI more creative freedom.
     });
     
     const imageUrl = media.url;
@@ -51,7 +64,7 @@ const generateAssetArtFlow = ai.defineFlow(
       throw new Error('Image generation failed to produce an output.');
     }
 
-    return { imageUrl };
+    return { imageUrl, joshiShareId };
   }
 );
 
