@@ -64,7 +64,7 @@ export function Header() {
                 strokeLinejoin="round"
               />
             </svg>
-            <span className="font-bold">Joshi's Share</span>
+            <span className="font-bold">Fractionalize</span>
           </Link>
           <nav className="hidden items-center gap-4 md:flex">
             {navItems.map((item) => (

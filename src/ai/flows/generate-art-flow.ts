@@ -27,9 +27,9 @@ const idGenPrompt = ai.definePrompt({
     name: 'artIdGenPrompt',
     input: { schema: GenerateArtInputSchema },
     prompt: `
-        You are a unique ID generator for a digital art platform called "Joshi's Share".
+        You are a unique ID generator for a digital art platform called "Fractionalize".
         Based on the user's art prompt and the current timestamp, create a short, memorable, and unique alphanumeric ID.
-        The ID should start with 'JOSHI-'.
+        The ID should start with 'FRAC-'.
 
         Art Prompt: {{{prompt}}}
         Timestamp: ${new Date().toISOString()}
