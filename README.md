@@ -18,10 +18,9 @@ git remote remove origin
 
 **Step 2: Add the correct remote address for "Fractionalize".**
 
-You must replace `<YOUR_CORRECT_URL>` with the actual URL from your `Fractionalize` repository page on GitHub.
-
 ```bash
-git remote add origin <YOUR_CORRECT_URL>
+git remote add origin https://github.com/deadwei9ht-maker/Fractionalize.git
 ```
 
 After running these two commands, your local project will be correctly linked to your `Fractionalize` repository. You can then push your code using `git push --set-upstream origin master` (or `main`).
+
