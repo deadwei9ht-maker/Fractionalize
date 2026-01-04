@@ -1,44 +1,62 @@
-# Joshi's Share
+# Joshi's Share - GitHub Deployment Guide
 
-This is a Next.js application built in Firebase Studio.
+You are seeing an "Auth fail" error because GitHub requires a Personal Access Token (PAT) for command-line operations, not your regular password.
+
+**Follow these steps exactly to create and use your token. This is the only way to fix the authentication error.**
 
 ---
 
-## Publishing to GitHub for the First Time
+### Step 1: Create the Personal Access Token on GitHub
 
-Follow these steps exactly to publish this project to a new, empty GitHub repository.
+1.  **Go to GitHub Settings:**
+    *   Log in to [github.com](https://github.com).
+    *   Click your profile picture in the top-right corner, then click **Settings**.
 
-**Your GitHub Repository URL:** `https://github.com/deadwei9ht-maker/Fractionalize.git`
+2.  **Go to Developer Settings:**
+    *   In the left sidebar, scroll to the bottom and click **Developer settings**.
 
-### Step 1: Initialize a New Git Repository
+3.  **Go to Personal Access Tokens:**
+    *   In the new left sidebar, click **Personal access tokens**, then select **Tokens (classic)**.
 
-Run this command in your terminal. This creates a fresh Git repository in your project folder.
+4.  **Generate New Token:**
+    *   Click **Generate new token**, then **Generate new token (classic)**.
 
-```bash
-git init -b main
-```
+5.  **Configure the Token:**
+    *   **Note (Name):** Give the token a name, like `Joshi-Share-CLI`.
+    *   **Expiration:** Set an expiration. `30 days` is a good choice.
+    *   **Select scopes:** This is the most important part. **Check the box next to `repo`**. This gives the token all the repository permissions it needs.
 
-### Step 2: Add and Commit Your Code
+6.  **Generate and COPY the Token:**
+    *   Scroll to the bottom and click **Generate token**.
+    *   **CRITICAL:** GitHub will now show you your token. **This is the only time you will ever see it.** Copy the token immediately and save it somewhere safe.
 
-These two commands will stage and save all of your application code.
+---
 
-```bash
-git add .
-git commit -m "Initial commit of Joshi's Share application"
-```
+### Step 2: Use the Token in Your Terminal
 
-### Step 3: Connect to Your GitHub Repository
+Now that you have the token, you must run the commands to push your code.
 
-This command links your local repository to the one on GitHub.
+1.  **Initialize Git (if you haven't already):**
+    ```bash
+    git init -b main
+    ```
 
-```bash
-git remote add origin https://github.com/deadwei9ht-maker/Fractionalize.git
-```
+2.  **Add and Commit Code:**
+    ```bash
+    git add .
+    git commit -m "Initial commit of Joshi's Share application"
+    ```
 
-### Step 4: Push Your Code to GitHub
+3.  **Connect to your GitHub Repo:**
+    ```bash
+    git remote add origin https://github.com/deadwei9ht-maker/Fractionalize.git
+    ```
 
-This final command will upload your code.
+4.  **Push Your Code (The Final Step):**
+    ```bash
+    git push -u origin main
+    ```
+    *   The terminal will ask for your `Username`. Type your GitHub username and press Enter.
+    *   The terminal will ask for your `Password`. **PASTE the Personal Access Token you just copied.** Do NOT use your normal GitHub password.
 
-```bash
-git push -u origin main
-```
+After you do this, your code will be on GitHub, the `main` branch will be available, and you will be able to create a rollout.
