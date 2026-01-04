@@ -22,7 +22,7 @@ interface ProvidersProps {
 
 const chains = [baseSepolia];
 const metadata = {
-  name: "Fractionalize",
+  name: "Joshi's Share",
   description: 'Turn any NFT into 10,000 tradable shares in 1 click.',
   url: 'https://app.firebase-studio.into-the-studio.dev/',
   icons: ['https://app.firebase-studio.into-the-studio.dev/favicon.ico'],
