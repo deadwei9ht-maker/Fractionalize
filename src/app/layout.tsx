@@ -8,7 +8,7 @@ import { Providers } from '@/components/providers';
 // This is a workaround for a metadata issue in Next.js.
 // We are defining it here to avoid a build error.
 export const dynamicMetadata: Metadata = {
-  title: "Fractionalize",
+  title: "Joshi's Share",
   description: 'Turn any NFT into 10,000 tradable shares in 1 click.',
 };
 

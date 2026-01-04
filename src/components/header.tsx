@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -64,7 +65,7 @@ export function Header() {
                 strokeLinejoin="round"
               />
             </svg>
-            <span className="font-bold">Fractionalize</span>
+            <span className="font-bold">Joshi's Share</span>
           </Link>
           <nav className="hidden items-center gap-4 md:flex">
             {navItems.map((item) => (
