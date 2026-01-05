@@ -1,6 +1,20 @@
+
 import { getApp, getApps, initializeApp, type FirebaseApp, type FirebaseOptions } from 'firebase/app';
 import { getAuth, type Auth } from 'firebase/auth';
 import { getFirestore, type Firestore } from 'firebase/firestore';
+
+// Define these first
+import {
+  useFirebase,
+  useFirebaseApp,
+  useAuth,
+  useFirestore,
+  FirebaseProvider,
+} from './provider';
+import { useUser } from './auth/use-user';
+import { useCollection } from './firestore/use-collection';
+import { useDoc } from './firestore/use-doc';
+
 
 export function initializeFirebase(config: FirebaseOptions): {
   app: FirebaseApp;
@@ -14,6 +28,7 @@ export function initializeFirebase(config: FirebaseOptions): {
   return { app, auth, db };
 }
 
+// Now export them
 export {
   useUser,
   useCollection,
@@ -24,14 +39,3 @@ export {
   useFirestore,
   FirebaseProvider,
 };
-
-import {
-  useFirebase,
-  useFirebaseApp,
-  useAuth,
-  useFirestore,
-  FirebaseProvider,
-} from './provider';
-import { useUser } from './auth/use-user';
-import { useCollection } from './firestore/use-collection';
-import { useDoc } from './firestore/use-doc';
