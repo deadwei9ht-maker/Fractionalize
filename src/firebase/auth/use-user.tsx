@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged, type User } from 'firebase/auth';
 
-import { useAuth } from '@/firebase';
+import { useAuth } from '@/firebase/provider';
 
 export function useUser() {
   const auth = useAuth();
@@ -11,7 +11,12 @@ export function useUser() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!auth) return;
+    if (!auth) {
+      // Set loading to false if auth is not available yet.
+      // It might be available on a subsequent render.
+      setLoading(false);
+      return;
+    };
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
