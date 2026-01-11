@@ -3,19 +3,6 @@ import { getApp, getApps, initializeApp, type FirebaseApp, type FirebaseOptions 
 import { getAuth, type Auth } from 'firebase/auth';
 import { getFirestore, type Firestore } from 'firebase/firestore';
 
-// Export hooks from their source files to avoid circular dependencies
-export {
-  useFirebase,
-  useFirebaseApp,
-  useAuth,
-  useFirestore,
-  FirebaseProvider,
-} from './provider';
-export { useUser } from './auth/use-user';
-export { useCollection } from './firestore/use-collection';
-export { useDoc } from './firestore/use-doc';
-
-
 export function initializeFirebase(config: FirebaseOptions): {
   app: FirebaseApp;
   auth: Auth;
@@ -27,3 +14,5 @@ export function initializeFirebase(config: FirebaseOptions): {
 
   return { app, auth, db };
 }
+
+    

@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -7,7 +8,7 @@ import {
 } from "firebase/auth";
 import { LogIn, LogOut } from "lucide-react";
 
-import { useAuth } from "@/firebase";
+import { useAuth } from "@/firebase/provider";
 import { useUser } from "@/firebase/auth/use-user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -95,3 +96,5 @@ export function UserAuth() {
     </DropdownMenu>
   );
 }
+
+    

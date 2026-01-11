@@ -18,7 +18,7 @@ import Image from 'next/image';
 import { Skeleton } from './ui/skeleton';
 import { Badge } from './ui/badge';
 import { useUser } from '@/firebase/auth/use-user';
-import { useFirestore } from '@/firebase';
+import { useFirestore } from '@/firebase/provider';
 import { saveAiNft } from '@/lib/firestore-actions';
 
 
@@ -199,3 +199,5 @@ export function TokenizeArt() {
     </Card>
   );
 }
+
+    

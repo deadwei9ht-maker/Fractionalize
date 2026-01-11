@@ -24,7 +24,7 @@ import { Skeleton } from "./ui/skeleton";
 import { UniswapDialog } from "./uniswap-dialog";
 import type { OwnedNft } from "./owned-nfts";
 import { saveFractionalizedNft } from "@/lib/firestore-actions";
-import { useFirestore } from "@/firebase";
+import { useFirestore } from "@/firebase/provider";
 import { Slider } from "./ui/slider";
 import { Label } from "./ui/label";
 
@@ -332,3 +332,5 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
     </>
   );
 }
+
+    

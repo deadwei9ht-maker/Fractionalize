@@ -15,11 +15,10 @@ import { Landmark, Upload, ShieldCheck, ShieldAlert, TriangleAlert, Info } from 
 import { useToast } from '@/hooks/use-toast';
 import { verifyDocuments } from '@/ai/flows/verify-documents-flow';
 import { useUser } from '@/firebase/auth/use-user';
-import { useFirestore } from '@/firebase';
+import { useFirestore, useFirebaseApp } from '@/firebase/provider';
 import { uploadFile } from '@/lib/storage-actions';
 import { saveRealWorldAsset } from '@/lib/firestore-actions';
 import { getStorage } from 'firebase/storage';
-import { useFirebaseApp } from '@/firebase/provider';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 
 export function TokenizeAsset() {
@@ -237,3 +236,5 @@ export function TokenizeAsset() {
     </Card>
   );
 }
+
+    
