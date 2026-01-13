@@ -332,5 +332,3 @@ export function NFTFractionalizer({ selectedNft }: NFTFractionalizerProps) {
     </>
   );
 }
-
-    

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { FirebaseProvider } from '@/firebase/provider';
+import { FirebaseProvider, useFirestore } from '@/firebase/provider';
 import { type FirebaseOptions } from 'firebase/app';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
@@ -11,7 +11,6 @@ import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5/react';
 import { WagmiConfig, createConfig, type State, useAccount } from 'wagmi';
 import { baseSepolia } from 'wagmi/chains';
 import { useUser } from '@/firebase/auth/use-user';
-import { useFirestore } from '@/firebase/provider';
 import { logWalletConnection } from '@/lib/firestore-actions';
 import { useToast } from '@/hooks/use-toast';
 
@@ -131,5 +130,3 @@ export function Providers({
     </WagmiConfig>
   );
 }
-
-    

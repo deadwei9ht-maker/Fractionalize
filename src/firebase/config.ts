@@ -1,6 +1,10 @@
 // Follow this guide to set up a Firebase project and obtain your config:
 // https://firebase.google.com/docs/web/setup
 
+import { getApp, getApps, initializeApp, type FirebaseApp, type FirebaseOptions } from 'firebase/app';
+import { getAuth, type Auth } from 'firebase/auth';
+import { getFirestore, type Firestore } from 'firebase/firestore';
+
 export function getFirebaseConfig() {
     const firebaseConfig = {
         apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -10,13 +14,18 @@ export function getFirebaseConfig() {
         messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
         appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
       };
-
-      // The validation below is too strict for the development environment,
-      // as environment variables are injected at a later stage.
-      // Removing this check to allow the application to start.
-      // if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
-      //   throw new Error('Missing Firebase configuration. Please check your .env.local file.');
-      // }
       
       return firebaseConfig;
+}
+
+export function initializeFirebase(config: FirebaseOptions): {
+  app: FirebaseApp;
+  auth: Auth;
+  db: Firestore;
+} {
+  const app = getApps().length ? getApp() : initializeApp(config);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  return { app, auth, db };
 }

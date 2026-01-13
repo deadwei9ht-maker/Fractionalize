@@ -8,9 +8,10 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { type FirebaseApp, type FirebaseOptions, getApps, getApp, initializeApp } from 'firebase/app';
-import { type Auth, getAuth } from 'firebase/auth';
-import { type Firestore, getFirestore } from 'firebase/firestore';
+import { type FirebaseApp, type FirebaseOptions } from 'firebase/app';
+import { type Auth } from 'firebase/auth';
+import { type Firestore } from 'firebase/firestore';
+import { initializeFirebase } from './config';
 
 export interface FirebaseContextValue {
   app: FirebaseApp | null;
@@ -33,27 +34,23 @@ export function FirebaseProvider({
   children,
   firebaseConfig
 }: FirebaseProviderProps) {
-  const [app, setApp] = useState<FirebaseApp | null>(null);
-  const [auth, setAuth] = useState<Auth | null>(null);
-  const [db, setDb] = useState<Firestore | null>(null);
+  const [firebase, setFirebase] = useState<FirebaseContextValue>({
+    app: null,
+    auth: null,
+    db: null,
+  });
 
   useEffect(() => {
     // This effect ensures Firebase is initialized only on the client side.
     if (firebaseConfig?.apiKey) {
-      const initializedApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
-      setApp(initializedApp);
-      setAuth(getAuth(initializedApp));
-      setDb(getFirestore(initializedApp));
+      const { app, auth, db } = initializeFirebase(firebaseConfig);
+      setFirebase({ app, auth, db });
     }
   }, [firebaseConfig]);
 
   const value = useMemo(
-    () => ({
-      app,
-      auth,
-      db,
-    }),
-    [app, auth, db]
+    () => (firebase),
+    [firebase]
   );
 
   return (
